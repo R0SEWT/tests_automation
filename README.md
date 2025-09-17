@@ -123,6 +123,8 @@ DS_API_KEY=tu_api_key
 HU_CODE=USRNM
 ```
 
+> Nota: si `HU_CODE` no está definida en tu entorno, el sistema utilizará `USRNM` como prefijo por defecto. Configura esta variable si necesitas personalizar el código de historia de usuario.
+
 ---
 
 ## Uso
