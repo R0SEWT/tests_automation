@@ -10,3 +10,7 @@ data/
 # Ignore Jupyter notebooks
 notebooks/
 **/.ipynb_checkpoints/
+
+# Ignore Jupyter notebooks
+notebooks/
+**/.ipynb_checkpoints/
