@@ -1,6 +1,6 @@
 import logging
 from src.redactionAssitant import builder as b
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 import re 
 from openai import OpenAI  
 
@@ -164,26 +164,28 @@ class Processor:
         if safe_quit:
             return "", ""
 
+        cps_list = preprocess_exp_or_cps(cps)
+        exp_list = preprocess_exp_or_cps(exp)
+
         # Procesar en batches
-        if len(cps.splitlines()) != len(exp.splitlines()):
+        if len(cps_list) != len(exp_list):
             self.logger.warning("Los casos de prueba y resultados esperados no tienen la misma longitud.")
-            self.logger.warning("número de casos de prueba: %d", len(cps.splitlines()))
-            self.logger.warning("número de resultados esperados: %d", len(exp.splitlines()))
+            self.logger.warning("número de casos de prueba: %d", len(cps_list))
+            self.logger.warning("número de resultados esperados: %d", len(exp_list))
             self.logger.warning("CPS: %s", cps)
             self.logger.warning("EXP: %s", exp)
             return "",""
-        else:
-            exp_list = cps_with_exp(cps, exp)
 
-        if not exp_list:
+        if not cps_list:
             return "",""
-        
 
-        batches = [exp_list[i : i + self.batch_size] for i in range(0, len(exp_list), self.batch_size)]
+        clean_pairs = [f"{cp} | {ex}" for cp, ex in zip(cps_list, exp_list)]
+
+        batches = [clean_pairs[i : i + self.batch_size] for i in range(0, len(clean_pairs), self.batch_size)]
 
         results = []
         with ThreadPoolExecutor(max_workers=4) as executor:
-            for batch_out in executor.map(self.builder.corregir_expect_result, batches):
+            for batch_out in executor.map(lambda batch: self.builder.corregir_expect_result("\n".join(batch)), batches):
                 results.extend(batch_out.splitlines())
 
         sep_obs = "OBS"
@@ -253,7 +255,7 @@ def preprocess_exp_or_cps(cps: str) -> list[str]:
         >>> print(result)  # ["USRNM001 Caso 1", "USRNM002 Caso 2"]
     """
     if not cps:
-        return ""
+        return []
     # Separar por líneas y limpiar espacios
     return [line.strip() for line in cps.splitlines() if line.strip()]
     

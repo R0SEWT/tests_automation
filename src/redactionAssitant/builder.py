@@ -1,6 +1,6 @@
 from openai import OpenAI  
 import logging
-from typing import List
+from typing import List, Union
 
 class Builder:
     """Constructor de casos de prueba, expect results y correcciones ortográficas."""
@@ -57,7 +57,11 @@ class Builder:
             self.logger.error("Error al obtener feedback: %s", e)
             return f"Error: {str(e)}"
 
-    def corregir_expect_result(self, cps_with_expectResult: str):
+    def corregir_expect_result(self, cps_with_expectResult: Union[str, List[str]]):
+        if isinstance(cps_with_expectResult, list):
+            # Sanitize each element to remove embedded newlines
+            sanitized_elements = [elem.replace('\n', ' ') if isinstance(elem, str) else str(elem) for elem in cps_with_expectResult]
+            cps_with_expectResult = "\n".join(sanitized_elements)
         try:
             response = self.client.chat.completions.create(
                 model=self.model,

@@ -6,13 +6,22 @@ load_dotenv()
 
 class Config:
     """Configuración centralizada para el redactor automático."""
-    
-    def __init__(self):
+
+    def __init__(self, default_hu_code: str | None = "USRNM"):
         self.API_KEY = os.getenv("DS_API_KEY")
-        self.code_hu = "USRNM"
 
         if not self.API_KEY:
             raise ValueError("DS_API_KEY no encontrada en las variables de entorno")
+
+        hu_code = os.getenv("HU_CODE")
+        if hu_code:
+            self.code_hu = hu_code
+        elif default_hu_code is not None:
+            self.code_hu = default_hu_code
+        else:
+            raise ValueError(
+                f"HU_CODE no encontrada en las variables de entorno y no se proporcionó valor por defecto (default_hu_code={default_hu_code!r})"
+            )
 
         # Usar Path para mejor manejo de rutas
         self.input_dir = Path("data/raw/")
