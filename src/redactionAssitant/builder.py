@@ -59,7 +59,9 @@ class Builder:
 
     def corregir_expect_result(self, cps_with_expectResult: Union[str, List[str]]):
         if isinstance(cps_with_expectResult, list):
-            cps_with_expectResult = "\n".join(cps_with_expectResult)
+            # Sanitize each element to remove embedded newlines
+            sanitized_elements = [elem.replace('\n', ' ') if isinstance(elem, str) else str(elem) for elem in cps_with_expectResult]
+            cps_with_expectResult = "\n".join(sanitized_elements)
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
