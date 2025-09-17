@@ -107,7 +107,7 @@ bibliotecas utilizadas activamente en el código son:
 - `pytest`, `pytest-cov` y `pytest-mock` para la suite de pruebas.
 
 ### Requisitos previos
-- Python 3.8 o superior
+- Python 3.10 o superior
 - API Key válida (DeepSeek u OpenAI)
 
 ### Pasos
