@@ -20,7 +20,7 @@ class Config:
             self.code_hu = default_hu_code
         else:
             raise ValueError(
-                "HU_CODE no encontrada en las variables de entorno y no se proporcionó valor por defecto"
+                f"HU_CODE no encontrada en las variables de entorno y no se proporcionó valor por defecto (default_hu_code={default_hu_code!r})"
             )
 
         # Usar Path para mejor manejo de rutas
