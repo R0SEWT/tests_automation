@@ -31,16 +31,30 @@ jobs:
       run: |
         pytest --cov=src/redactionAssitant --cov-report=xml --cov-fail-under=80
 
+    # Upload coverage to Codecov (con token en tu repo principal)
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+      uses: codecov/codecov-action@v4
       with:
-        file: ./coverage.xml
+        token: ${{ secrets.CODECOV_TOKEN }}   # <-- agrega este secret en GitHub
+        files: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        fail_ci_if_error: true
+        verbose: true
+
+    # Fallback para PRs desde forks (no hay acceso a secrets)
+    - name: Upload coverage to Codecov (tokenless fallback)
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        verbose: true
+      continue-on-error: true
 
     - name: Generate coverage badge
       if: github.ref == 'refs/heads/main'
       run: |
-        # This would typically use a third-party action to generate badges
+        # Esto normalmente usa un action externo
         echo "Coverage report generated and uploaded"
