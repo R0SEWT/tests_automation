@@ -157,6 +157,20 @@ class TestBuilder:
         assert "OBS:" in user_prompt2
         assert "tiempo presente" in user_prompt2
 
+    def test_corregir_expect_result_accepts_list_without_python_syntax(self, builder, mock_client):
+        """Ensure list inputs are transformed into clean multiline prompts"""
+        data = ["CP1 | Exp1", "CP2 | Exp2"]
+
+        builder.corregir_expect_result(data)
+
+        call_args = mock_client.chat.completions.create.call_args
+        user_prompt = call_args[1]["messages"][1]["content"]
+
+        assert "[" not in user_prompt and "]" not in user_prompt
+        assert "CP1 | Exp1" in user_prompt
+        assert "CP2 | Exp2" in user_prompt
+        assert "CP1 | Exp1\nCP2 | Exp2" in user_prompt
+
     @pytest.mark.parametrize("method_name,expected_log_message", [
         ("corregir_ortografia", "Error al llamar a la API"),
         ("obtener_feedback", "Error al obtener feedback"),
