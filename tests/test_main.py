@@ -45,6 +45,7 @@ class TestMain:
             Path("exp_out.txt"),
             Path("fb_out.txt")
         )
+        mock_logging.info.assert_called_with("Feedback resumido:\n%s", "CPS feedback\n\nEXP feedback")
 
     @patch('src.redactionAssitant.main.Config')
     @patch('src.redactionAssitant.main.get_data')
