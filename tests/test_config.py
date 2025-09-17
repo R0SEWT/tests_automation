@@ -1,23 +1,48 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from src.redactionAssitant.config import Config
+
+
+_DEFAULT_SENTINEL = object()
 
 
 class TestConfig:
     """Test suite for Config class"""
 
-    @patch.dict('os.environ', {'DS_API_KEY': 'test_api_key'})
-    def test_init_success(self):
+    @pytest.mark.parametrize(
+        "hu_env, fallback, expected",
+        [
+            ("HU123", _DEFAULT_SENTINEL, "HU123"),
+            (None, "CUSTOM", "CUSTOM"),
+            (None, _DEFAULT_SENTINEL, "USRNM"),
+        ],
+    )
+    def test_init_success(self, hu_env, fallback, expected):
         """Test successful configuration initialization"""
-        config = Config()
+        env = {'DS_API_KEY': 'test_api_key'}
+        if hu_env is not None:
+            env['HU_CODE'] = hu_env
+
+        with patch.dict('os.environ', env, clear=True):
+            if fallback is _DEFAULT_SENTINEL:
+                config = Config()
+            else:
+                config = Config(default_hu_code=fallback)
+
         assert config.API_KEY == 'test_api_key'
-        assert config.code_hu == 'USRNM'
+        assert config.code_hu == expected
 
     @patch.dict('os.environ', {}, clear=True)
     def test_init_no_api_key(self):
         """Test initialization failure when API key is missing"""
         with pytest.raises(ValueError, match="DS_API_KEY no encontrada"):
             Config()
+
+    def test_init_no_hu_code(self):
+        """Test initialization failure when HU code is missing and no fallback"""
+        with patch.dict('os.environ', {'DS_API_KEY': 'test_api_key'}, clear=True):
+            with pytest.raises(ValueError, match="HU_CODE no encontrada"):
+                Config(default_hu_code=None)
 
     @patch.dict('os.environ', {'DS_API_KEY': 'test_api_key'})
     def test_input_path(self):
