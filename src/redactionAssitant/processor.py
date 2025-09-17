@@ -253,7 +253,7 @@ def preprocess_exp_or_cps(cps: str) -> list[str]:
         >>> print(result)  # ["USRNM001 Caso 1", "USRNM002 Caso 2"]
     """
     if not cps:
-        return ""
+        return []
     # Separar por líneas y limpiar espacios
     return [line.strip() for line in cps.splitlines() if line.strip()]
     

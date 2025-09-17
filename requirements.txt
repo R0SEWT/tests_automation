@@ -156,3 +156,8 @@ wheel==0.45.1
 xlsxwriter==3.2.5
 zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1748277385522/work
 zstandard @ file:///croot/zstandard_1731356346222/work
+
+# Testing dependencies
+pytest==8.3.3
+pytest-cov==5.0.0
+pytest-mock==3.14.0
