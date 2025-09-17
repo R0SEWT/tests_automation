@@ -72,12 +72,12 @@ Prototipado, análisis y monitoreo de métricas.
 
 ## Tecnologías utilizadas
 
-**Backend e IA**  
-- Python 3.8+  
-- DeepSeek/OpenAI API  
-- BeautifulSoup4 (parsing XML)  
-- pandas (procesamiento de datos)  
-- concurrent.futures (procesamiento concurrente)  
+**Backend e IA**
+- Python 3.8+
+- DeepSeek/OpenAI API (cliente [`openai`](https://pypi.org/project/openai/))
+- BeautifulSoup4 + lxml (parsing XML)
+- pandas + xmltodict (procesamiento y normalización de datos)
+- concurrent.futures (procesamiento concurrente)
 
 **Testing**  
 - Pytest + pytest-cov + pytest-mock  
@@ -93,9 +93,22 @@ Prototipado, análisis y monitoreo de métricas.
 
 ## Instalación y configuración
 
-### Requisitos
-- Python 3.8 o superior  
-- API Key válida (DeepSeek u OpenAI)  
+### Dependencias
+
+Las dependencias del proyecto se gestionan en `requirements.txt` con rangos
+semánticos para asegurar compatibilidad sin quedar atados a builds locales. Las
+bibliotecas utilizadas activamente en el código son:
+
+- `beautifulsoup4` y `lxml` para parsear XML.
+- `openai` como cliente para DeepSeek/OpenAI.
+- `pandas` para normalización tabular de las HU.
+- `python-dotenv` para la carga de variables de entorno.
+- `xmltodict` para convertir estructuras XML a diccionarios.
+- `pytest`, `pytest-cov` y `pytest-mock` para la suite de pruebas.
+
+### Requisitos previos
+- Python 3.8 o superior
+- API Key válida (DeepSeek u OpenAI)
 
 ### Pasos
 ```bash
@@ -111,7 +124,10 @@ source .venv/bin/activate  # Linux/Mac
 # 3. Instalar dependencias
 pip install -r requirements.txt
 
-# 4. Configurar variables de entorno
+# 4. Verificar la instalación de dependencias
+pip check
+
+# 5. Configurar variables de entorno
 cp .env.example .env
 # Editar .env con tu API key
 ````
