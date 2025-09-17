@@ -32,8 +32,7 @@ class TestProcessor:
         with patch('src.redactionAssitant.processor.b.Builder') as mock_builder_class:
             mock_builder_class.return_value = mock_builder
             with patch('src.redactionAssitant.processor.OpenAI'):
-                proc = Processor(mock_config, "test_api_key")
-                return proc
+                return Processor(mock_config, "test_api_key")
 
     def test_init_success(self, mock_config):
         """Test successful initialization"""
