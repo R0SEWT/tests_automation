@@ -25,14 +25,13 @@ def process_flow() -> None:
     proc = Processor(cfg, cfg.API_KEY)
 
     # 3) Corregir y obtener feedback
-    new_cps, resume_fb = proc.cps_corregidas(hus, cps)
-    new_exp = proc.exp_corregidos(hus, cps, exp)
-    #sume_fb = proc.resume_feedback(fb_cps, fb_exp)
-    new_exp, exp_fb = proc.exp_corregidos(hus, new_cps, exp)
-    
-    logging.info("Feedback resumido:\n%s", resume_fb)
+    new_cps, cps_feedback = proc.cps_corregidas(hus, cps)
+    new_exp, exp_feedback = proc.exp_corregidos(hus, new_cps, exp)
 
-    resume_fb += "\n\n" + exp_fb
+    feedback_parts = [part for part in (cps_feedback, exp_feedback) if part]
+    resume_fb = "\n\n".join(feedback_parts)
+
+    logging.info("Feedback resumido:\n%s", resume_fb)
     # 4) Guardar salidas
     cps_out, exp_out, fb_out = cfg.all_output_paths()
     save_data(new_cps, new_exp, resume_fb, cps_out, exp_out, fb_out)
