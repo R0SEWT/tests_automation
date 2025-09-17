@@ -8,27 +8,33 @@ class TestUtils:
     """Test suite for utility functions"""
 
     @patch('src.redactionAssitant.utils.Path')
-    def test_get_data_success(self, mock_path_class):
+    @patch('src.redactionAssitant.utils._read_text')
+    def test_get_data_success(self, mock_read_text, mock_path_class):
         """Test successful data loading"""
-        # Mock paths
+        # Mock _read_text to return the expected strings
+        mock_read_text.side_effect = [
+            "Historia de usuario",  # hus
+            "Caso de prueba 1\nCaso de prueba 2",  # cps
+            "Resultado esperado 1\nResultado esperado 2"  # exp
+        ]
+        
+        # Mock paths with exists() returning True
         mock_hus_path = MagicMock()
         mock_cps_path = MagicMock()
         mock_exp_path = MagicMock()
-
         mock_hus_path.exists.return_value = True
         mock_cps_path.exists.return_value = True
         mock_exp_path.exists.return_value = True
-
-        mock_hus_path.read_text.return_value = "Historia de usuario\n"
-        mock_cps_path.read_text.return_value = "Caso de prueba 1\nCaso de prueba 2\n"
-        mock_exp_path.read_text.return_value = "Resultado esperado 1\nResultado esperado 2\n"
-
+        
+        # Mock Path constructor to return our mock paths
+        mock_path_class.side_effect = [mock_hus_path, mock_cps_path, mock_exp_path]
+        
         # Mock the input_path method calls
         mock_config = MagicMock()
         mock_config.input_path.side_effect = [mock_hus_path, mock_cps_path, mock_exp_path]
-
+    
         hus, cps, exp = get_data(mock_config)
-
+    
         assert hus == "Historia de usuario"
         assert cps == "Caso de prueba 1\nCaso de prueba 2"
         assert exp == "Resultado esperado 1\nResultado esperado 2"
