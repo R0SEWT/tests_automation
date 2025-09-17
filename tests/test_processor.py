@@ -112,7 +112,7 @@ class TestProcessor:
 
     def test_exp_corregidos_mismatch_lines(self, processor):
         """Test when CPS and EXP have different line counts"""
-        result, feedback = processor.exp_corregidos("HU", "One line", "Two\nLines")
+        result, feedback = processor.exp_corregidos("HU", "One line\n\n", "Two\nLines\n")
         assert result == ""
         assert feedback == ""
 
@@ -125,6 +125,26 @@ class TestProcessor:
 
         assert result == ""
         assert feedback == ""
+
+    def test_exp_corregidos_handles_blank_lines_and_formats_batches(self, processor, mock_builder):
+        """Test that blank lines are ignored and batches are sent as plain text"""
+        hu = "Como usuario quiero login"
+        cps = "USRNM001 Validar login\n\n   \nUSRNM002 Validar logout\n"
+        exp = "\n Sistema permite acceso \n\nSistema cierra sesión  \n"
+
+        result, feedback = processor.exp_corregidos(hu, cps, exp)
+
+        assert "Resultado corregido" in result
+        assert feedback == "Feedback de corrección"
+
+        mock_builder.corregir_expect_result.assert_called_once()
+        args, _ = mock_builder.corregir_expect_result.call_args
+        sent_prompt = args[0]
+
+        assert isinstance(sent_prompt, str)
+        assert "[" not in sent_prompt and "]" not in sent_prompt
+        assert "USRNM001 Validar login | Sistema permite acceso" in sent_prompt
+        assert "USRNM002 Validar logout | Sistema cierra sesión" in sent_prompt
 
 
 class TestHelperFunctions:
