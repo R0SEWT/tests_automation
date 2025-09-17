@@ -24,11 +24,7 @@ class TestMain:
 
         mock_processor = MagicMock()
         mock_processor.cps_corregidas.return_value = ("corrected CPS", "CPS feedback")
-        # exp_corregidos is called twice in the actual code
-        mock_processor.exp_corregidos.side_effect = [
-            ("intermediate EXP", "intermediate feedback"),  # First call
-            ("corrected EXP", "EXP feedback")  # Second call
-        ]
+        mock_processor.exp_corregidos.return_value = ("corrected EXP", "EXP feedback")
         mock_processor_class.return_value = mock_processor
 
         # Import and call the function
@@ -40,11 +36,16 @@ class TestMain:
         mock_get_data.assert_called_once_with(mock_config)
         mock_processor_class.assert_called_once_with(mock_config, mock_config.API_KEY)
         mock_processor.cps_corregidas.assert_called_once_with("HU text", "CPS text")
-        # exp_corregidos is called twice
-        assert mock_processor.exp_corregidos.call_count == 2
-        mock_processor.exp_corregidos.assert_any_call("HU text", "CPS text", "EXP text")
-        mock_processor.exp_corregidos.assert_any_call("HU text", "corrected CPS", "EXP text")
-        mock_save_data.assert_called_once_with("corrected CPS", "corrected EXP", "CPS feedback\n\nEXP feedback", Path("cps_out.txt"), Path("exp_out.txt"), Path("fb_out.txt"))
+        mock_processor.exp_corregidos.assert_called_once_with("HU text", "corrected CPS", "EXP text")
+        mock_save_data.assert_called_once_with(
+            "corrected CPS",
+            "corrected EXP",
+            "CPS feedback\n\nEXP feedback",
+            Path("cps_out.txt"),
+            Path("exp_out.txt"),
+            Path("fb_out.txt")
+        )
+        mock_logging.info.assert_called_with("Feedback resumido:\n%s", "CPS feedback\n\nEXP feedback")
 
     @patch('src.redactionAssitant.main.Config')
     @patch('src.redactionAssitant.main.get_data')
