@@ -41,22 +41,37 @@ def get_data(cfg):
     return hus, cps, exp
 
 """Guarda los datos corregidos y el feedback en archivos."""
-def save_data(new_cps: str, new_exp: str, feedback: str, cps_out: str, exp_out: str, fb_out: str):
+def save_data(new_cps: str, new_exp: str, feedback: str, cps_out: str, exp_out: str, fb_out: str) -> None:
+    """
+    Guarda los datos procesados en los archivos correspondientes.
+    
+    Args:
+        new_cps: Casos de prueba corregidos
+        new_exp: Resultados esperados corregidos  
+        feedback: Feedback del procesamiento
+        cps_out: Ruta de salida para casos de prueba
+        exp_out: Ruta de salida para resultados esperados
+        fb_out: Ruta de salida para feedback
+    """
     try:
+        # Guardar casos de prueba corregidos
         with open(cps_out, 'w', encoding='utf-8') as f:
             f.write(new_cps)
-            logger.info("Casos de prueba corregidos guardados en %s", cps_out)
-            with open(exp_out, 'w', encoding='utf-8') as f:
-                f.write(new_exp)
-                logger.info("Expected Results corregidos guardados en %s", exp_out)
+        logger.info("Casos de prueba corregidos guardados en %s", cps_out)
+        
+        # Guardar resultados esperados corregidos
+        with open(exp_out, 'w', encoding='utf-8') as f:
+            f.write(new_exp)
+        logger.info("Expected Results corregidos guardados en %s", exp_out)
 
+        # Guardar feedback
         with open(fb_out, 'w', encoding='utf-8') as f:
             f.write(feedback)
-            logger.info("Feedback guardado en %s", fb_out)
+        logger.info("Feedback guardado en %s", fb_out)
 
     except Exception as e:
         logger.error("Error al guardar los datos: %s", e)
-        raise e
+        raise
         
 
 T = TypeVar("T")

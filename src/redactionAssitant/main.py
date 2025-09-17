@@ -1,9 +1,9 @@
 """
-Auto‐redactor de HUS y Expect para QA.
+Auto-redactor de HUS y Expected Results para QA.
 
 Flujo:
   1. Carga configuración
-  2. Obtiene datos (HUS, casos, expect)
+  2. Obtiene datos (HUS, casos, expected results)
   3. Procesa correcciones y genera feedback
   4. Guarda los resultados 
 """
