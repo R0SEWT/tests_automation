@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/R0SEWT/tests_automation/actions/workflows/ci.yml/badge.svg)](https://github.com/R0SEWT/tests_automation/actions/workflows/ci.yml)
 
+
 ## Descripción
 
 **Tests Automation** es un sistema diseñado para automatizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).
@@ -195,15 +196,20 @@ graph TD
 * Cobertura actual: \~97% en módulos críticos.
 * Tests unitarios para Processor, Builder, Config y utilidades.
 * Uso de mocks para aislar dependencias externas.
+* Ruff para linting y formateo (PEP 8).
 * Integración en CI/CD (validación automática en cada push/pull).
 * Requisito mínimo: cobertura ≥80% para merge.
 
 ### Ejecutar tests
 
 ```bash
-pip install pytest pytest-cov pytest-mock
+#pip install pytest pytest-cov pytest-mock ruff
 
-pytest --cov=src/redactionAssitant --cov-report=term-missing
+# Linting y estilo
+ruff check .
+
+# Tests con cobertura
+pytest --cov=src/redactionAssistant --cov-report=term-missing
 ```
 
 ### Estructura de tests
