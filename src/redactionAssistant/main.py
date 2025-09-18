@@ -9,9 +9,9 @@ Flujo:
 """
 import sys
 import logging
-from src.redactionAssitant.config import Config
-from src.redactionAssitant.utils import get_data, save_data
-from src.redactionAssitant.processor import Processor
+from src.redactionAssistant.config import Config
+from src.redactionAssistant.utils import get_data, save_data
+from src.redactionAssistant.processor import Processor
 
 
 def process_flow() -> None:

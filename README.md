@@ -36,7 +36,7 @@ Automatizar la corrección ortográfica, gramatical y de estilo en casos de prue
 
 tests\_automation/
 ├── src/                       # Código fuente principal
-│   ├── redactionAssitant/     # Motor principal de corrección IA
+│   ├── redactionAssistant/     # Motor principal de corrección IA
 │   │   ├── main.py            # Punto de entrada del sistema
 │   │   ├── config.py          # Gestión de configuración centralizada
 │   │   ├── processor.py       # Procesamiento por lotes y concurrencia
@@ -156,7 +156,7 @@ HU_CODE=USRNM
 # - TestCases.txt
 # - expectedResults.txt
 
-python src/redactionAssitant/main.py
+python src/redactionAssistant/main.py
 ```
 
 Los resultados corregidos se guardan en `data/processed/`.

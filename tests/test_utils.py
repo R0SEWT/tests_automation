@@ -1,13 +1,13 @@
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
-from src.redactionAssitant.utils import get_data, save_data, procesar_en_batches
+from src.redactionAssistant.utils import get_data, save_data, procesar_en_batches
 
 
 class TestUtils:
     """Test suite for utility functions"""
 
-    @patch('src.redactionAssitant.utils.Path')
-    @patch('src.redactionAssitant.utils._read_text')
+    @patch('src.redactionAssistant.utils.Path')
+    @patch('src.redactionAssistant.utils._read_text')
     def test_get_data_success(self, mock_read_text, mock_path_class):
         """Test successful data loading"""
         # Mock _read_text to return the expected strings
@@ -38,7 +38,7 @@ class TestUtils:
         assert cps == "Caso de prueba 1\nCaso de prueba 2"
         assert exp == "Resultado esperado 1\nResultado esperado 2"
 
-    @patch('src.redactionAssitant.utils.Path')
+    @patch('src.redactionAssistant.utils.Path')
     def test_get_data_file_not_found(self, mock_path_class):
         """Test file not found error"""
         mock_path = MagicMock()

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from src.redactionAssitant.config import Config
+from src.redactionAssistant.config import Config
 
 
 _DEFAULT_SENTINEL = object()

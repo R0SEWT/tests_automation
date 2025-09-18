@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, patch
-from src.redactionAssitant.processor import Processor, cps_with_exp, preprocess_exp_or_cps
+from src.redactionAssistant.processor import Processor, cps_with_exp, preprocess_exp_or_cps
 
 
 class MockConfig:
@@ -29,15 +29,15 @@ class TestProcessor:
     @pytest.fixture
     def processor(self, mock_config, mock_builder):
         """Fixture for Processor instance with mocked dependencies"""
-        with patch('src.redactionAssitant.processor.b.Builder') as mock_builder_class:
+        with patch('src.redactionAssistant.processor.b.Builder') as mock_builder_class:
             mock_builder_class.return_value = mock_builder
-            with patch('src.redactionAssitant.processor.OpenAI'):
+            with patch('src.redactionAssistant.processor.OpenAI'):
                 return Processor(mock_config, "test_api_key")
 
     def test_init_success(self, mock_config):
         """Test successful initialization"""
-        with patch('src.redactionAssitant.processor.b.Builder'):
-            with patch('src.redactionAssitant.processor.OpenAI'):
+        with patch('src.redactionAssistant.processor.b.Builder'):
+            with patch('src.redactionAssistant.processor.OpenAI'):
                 proc = Processor(mock_config, "test_key")
                 assert proc.cfg == mock_config
                 assert proc.batch_size == 20
@@ -49,7 +49,7 @@ class TestProcessor:
 
     def test_init_openai_failure(self, mock_config):
         """Test initialization failure with OpenAI client error"""
-        with patch('src.redactionAssitant.processor.OpenAI') as mock_openai:
+        with patch('src.redactionAssistant.processor.OpenAI') as mock_openai:
             mock_openai.side_effect = Exception("Connection failed")
             with pytest.raises(Exception, match="Connection failed"):
                 Processor(mock_config, "test_key")
