@@ -257,3 +257,4 @@ Ver archivo [LICENSE](./LICENSE).
 * Autor: [linkedin.com/in/r0sewt](https://www.linkedin.com/in/r0sewt) · [rosewt.dev](https://rosewt.dev)
 
 ```
+
