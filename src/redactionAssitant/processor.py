@@ -95,12 +95,12 @@ class Processor:
         sep_obs = "OBS"
         sep_cps = cod_hu
         
-        obs   = "\n".join([l for l in results if l.startswith(sep_obs)])
+        obs   = "\n".join([line for line in results if line.startswith(sep_obs)])
         # Filtrar casos de prueba corregidos
         self.logger.info("Filtrando casos de prueba corregidos...")
         # regex extraer desde sep_cps hasta el final de la línea o hasta sep_obs
         regex_cps = f"{sep_cps}.*?(?={sep_obs}|$)"
-        cps_r = [re.search(regex_cps, l).group(0) for l in results if re.search(regex_cps, l)]
+        cps_r = [re.search(regex_cps, line).group(0) for line in results if re.search(regex_cps, line)]
 
         feedback = self.builder.obtener_feedback(obs)
 
@@ -191,8 +191,8 @@ class Processor:
         sep_obs = "OBS"
         sep_exp = "ExpRes"
         
-        obs_str   = "\n".join([l.split(":",1)[-1].strip() for l in results if l.startswith(sep_obs)])
-        exp_str   = "\n".join([l.split(":",1)[-1].strip() for l in results if l.startswith(sep_exp)])
+        obs_str   = "\n".join([line.split(":",1)[-1].strip() for line in results if line.startswith(sep_obs)])
+        exp_str   = "\n".join([line.split(":",1)[-1].strip() for line in results if line.startswith(sep_exp)])
 
         # Filtrar resultados esperados corregidos
         self.logger.info("Filtrando resultados esperados corregidos...")

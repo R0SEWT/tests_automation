@@ -1,6 +1,6 @@
-import os
 import pandas as pd
 from bs4 import BeautifulSoup
+from abc import ABC, abstractmethod
 import xmltodict
 from pathlib import Path
 from typing import List, Dict, Any
@@ -70,10 +70,6 @@ def get_clean_hu_dict(raw_hu_dict: Dict[str, Any]) -> Dict[str, str]:
         "link": raw_hu_dict.get("link", ""),
         "description": get_description_from_raw_hu_dict(raw_hu_dict),
     }
-
-############################ INTERFAZ ########################################
-
-from abc import ABC, abstractmethod
 
 class XMLParserStrategy(ABC):
     @abstractmethod

@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from src.redactionAssitant.main import main, process_flow
+from src.redactionAssitant.main import main
 
 
 class TestMain:

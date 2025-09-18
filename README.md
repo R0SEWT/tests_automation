@@ -1,5 +1,7 @@
 # Tests Automation — Sistema Inteligente de Corrección de Casos de Prueba
 
+[![CI](https://github.com/R0SEWT/tests_automation/actions/workflows/ci.yml/badge.svg)](https://github.com/R0SEWT/tests_automation/actions/workflows/ci.yml)
+
 ## Descripción
 
 **Tests Automation** es un sistema diseñado para automatizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).

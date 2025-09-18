@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 from src.redactionAssitant.builder import Builder
 
 
@@ -48,7 +48,7 @@ class TestBuilder:
     def test_corregir_ortografia_empty_inputs(self, builder, mock_client, caplog):
         """Test orthography correction with empty inputs"""
         with caplog.at_level("WARNING"):
-            result = builder.corregir_ortografia("", [])
+            builder.corregir_ortografia("", [])
 
         assert "Historia de usuario o casos de prueba vacíos" in caplog.text
         mock_client.chat.completions.create.assert_called_once()

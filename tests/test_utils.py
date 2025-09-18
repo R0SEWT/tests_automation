@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import patch, mock_open, MagicMock
-from pathlib import Path
 from src.redactionAssitant.utils import get_data, save_data, procesar_en_batches
 
 

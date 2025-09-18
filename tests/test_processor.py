@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from src.redactionAssitant.processor import Processor, cps_with_exp, preprocess_exp_or_cps
 
 
