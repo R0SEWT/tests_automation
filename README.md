@@ -156,7 +156,7 @@ HU_CODE=USRNM
 
 **Error: `DS_API_KEY requerida para provider 'deepseek'`**
 - **Solución**: Obtén una API key de [DeepSeek](https://platform.deepseek.com/) y configúrala
-- **Ejemplo**: `DS_API_KEY=sk-e67b3fb2a48e4f20bb16443c3ddadb5e`
+- **Ejemplo**: `DS_API_KEY=sk-...`
 
 **Error: `OPENAI_API_KEY requerida para provider 'openai'`**
 - **Solución**: Obtén una API key de [OpenAI](https://platform.openai.com/) y configúrala
