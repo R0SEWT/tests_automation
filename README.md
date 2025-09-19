@@ -136,10 +136,49 @@ Ejemplo de `.env`:
 
 ```ini
 DS_API_KEY=tu_api_key
+OPENAI_API_KEY=tu_openai_key
+PROVIDER=deepseek
+BATCH_SIZE=20
 HU_CODE=USRNM
 ```
 
 > Nota: si `HU_CODE` no está definida en tu entorno, el sistema utilizará `USRNM` como prefijo por defecto. Configura esta variable si necesitas personalizar el código de historia de usuario.
+
+---
+
+## Troubleshooting configuración
+
+### Errores comunes de configuración
+
+**Error: `PROVIDER no configurado. Debe ser 'deepseek' o 'openai'`**
+- **Solución**: Agrega `PROVIDER=deepseek` o `PROVIDER=openai` en tu archivo `.env`
+- **Ejemplo**: `PROVIDER=deepseek`
+
+**Error: `DS_API_KEY requerida para provider 'deepseek'`**
+- **Solución**: Obtén una API key de [DeepSeek](https://platform.deepseek.com/) y configúrala
+- **Ejemplo**: `DS_API_KEY=sk-e67b3fb2a48e4f20bb16443c3ddadb5e`
+
+**Error: `OPENAI_API_KEY requerida para provider 'openai'`**
+- **Solución**: Obtén una API key de [OpenAI](https://platform.openai.com/) y configúrala
+- **Ejemplo**: `OPENAI_API_KEY=sk-proj-...`
+
+**Error: `BATCH_SIZE no configurado. Debe ser un número entero positivo`**
+- **Solución**: Agrega `BATCH_SIZE=20` (o cualquier número positivo) en tu `.env`
+- **Recomendación**: Valores típicos: 10-50 dependiendo de tu API rate limits
+
+**Error: `HU_CODE inválido: ''. Debe ser una cadena no vacía`**
+- **Solución**: Configura un código válido como `HU_CODE=USRNM`
+- **Nota**: Si no configuras HU_CODE, se usa `USRNM` por defecto
+
+### Verificación de configuración
+
+Para verificar que tu configuración es correcta, ejecuta:
+
+```bash
+python -c "from src.redactionAssistant.config import Config; cfg = Config(); print('Configuración válida')"
+```
+
+Si hay errores, se mostrarán mensajes claros con instrucciones para corregirlos.
 
 ---
 

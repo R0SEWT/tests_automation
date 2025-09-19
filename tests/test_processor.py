@@ -7,6 +7,8 @@ class MockConfig:
     """Mock configuration class for testing"""
     def __init__(self):
         self.code_hu = "USRNM"
+        self.provider = "deepseek"
+        self.batch_size = 20
 
 
 class TestProcessor:

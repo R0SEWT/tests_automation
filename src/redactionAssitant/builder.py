@@ -5,9 +5,14 @@ from typing import List, Union
 class Builder:
     """Constructor de casos de prueba, expect results y correcciones ortográficas."""
 
-    def __init__(self, client: OpenAI):
+    def __init__(self, client: OpenAI, provider: str = "deepseek"):
         self.client = client
-        self.model = "deepseek-chat"  # O el nombre que uses en DeepSeek
+        if provider == "deepseek":
+            self.model = "deepseek-chat"
+        elif provider == "openai":
+            self.model = "gpt-4"  # or whatever default OpenAI model
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
         self.logger = logging.getLogger(__name__)
 
     def corregir_ortografia(self, hu, cps: List[str]) -> str:
