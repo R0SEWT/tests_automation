@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from src.redactionAssitant.builder import Builder
+from src.redactionAssistant.builder import Builder
 
 
 class TestBuilder:

@@ -1,5 +1,5 @@
 import logging
-from src.redactionAssitant import builder as b
+from src.redactionAssistant import builder as b
 from concurrent.futures import ThreadPoolExecutor
 import re 
 from openai import OpenAI  
@@ -39,14 +39,17 @@ class Processor:
             raise ValueError("API key is required")
             
         try:
-            self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+            if cfg.provider == "deepseek":
+                self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+            else:  # openai
+                self.client = OpenAI(api_key=api_key)
         except Exception as e:
             self.logger.error("Failed to initialize OpenAI client: %s", e)
             raise
             
-        self.builder = b.Builder(self.client)
-        self.batch_size = 20
-        self.logger.info("Processor initialized successfully")
+        self.builder = b.Builder(self.client, cfg.provider)
+        self.batch_size = cfg.batch_size
+        self.logger.info("Processor initialized successfully with batch_size=%d", self.batch_size)
 
     def cps_corregidas(self, hu: str, cps: str) -> tuple[str, str]:
         """

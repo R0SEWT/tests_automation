@@ -33,7 +33,7 @@ Automatizar la corrección ortográfica, gramatical y de estilo en casos de prue
 
 tests\_automation/
 ├── src/                       # Código fuente principal
-│   ├── redactionAssitant/     # Motor principal de corrección IA
+│   ├── redactionAssistant/     # Motor principal de corrección IA
 │   │   ├── main.py            # Punto de entrada del sistema
 │   │   ├── config.py          # Gestión de configuración centralizada
 │   │   ├── processor.py       # Procesamiento por lotes y concurrencia
@@ -136,10 +136,49 @@ Ejemplo de `.env`:
 
 ```ini
 DS_API_KEY=tu_api_key
+OPENAI_API_KEY=tu_openai_key
+PROVIDER=deepseek
+BATCH_SIZE=20
 HU_CODE=USRNM
 ```
 
 > Nota: si `HU_CODE` no está definida en tu entorno, el sistema utilizará `USRNM` como prefijo por defecto. Configura esta variable si necesitas personalizar el código de historia de usuario.
+
+---
+
+## Troubleshooting configuración
+
+### Errores comunes de configuración
+
+**Error: `PROVIDER no configurado. Debe ser 'deepseek' o 'openai'`**
+- **Solución**: Agrega `PROVIDER=deepseek` o `PROVIDER=openai` en tu archivo `.env`
+- **Ejemplo**: `PROVIDER=deepseek`
+
+**Error: `DS_API_KEY requerida para provider 'deepseek'`**
+- **Solución**: Obtén una API key de [DeepSeek](https://platform.deepseek.com/) y configúrala
+- **Ejemplo**: `DS_API_KEY=sk-...`
+
+**Error: `OPENAI_API_KEY requerida para provider 'openai'`**
+- **Solución**: Obtén una API key de [OpenAI](https://platform.openai.com/) y configúrala
+- **Ejemplo**: `OPENAI_API_KEY=sk-proj-...`
+
+**Error: `BATCH_SIZE no configurado. Debe ser un número entero positivo`**
+- **Solución**: Agrega `BATCH_SIZE=20` (o cualquier número positivo) en tu `.env`
+- **Recomendación**: Valores típicos: 10-50 dependiendo de tu API rate limits
+
+**Error: `HU_CODE inválido: ''. Debe ser una cadena no vacía`**
+- **Solución**: Configura un código válido como `HU_CODE=USRNM`
+- **Nota**: Si no configuras HU_CODE, se usa `USRNM` por defecto
+
+### Verificación de configuración
+
+Para verificar que tu configuración es correcta, ejecuta:
+
+```bash
+python -c "from src.redactionAssistant.config import Config; cfg = Config(); print('Configuración válida')"
+```
+
+Si hay errores, se mostrarán mensajes claros con instrucciones para corregirlos.
 
 ---
 
@@ -153,7 +192,7 @@ HU_CODE=USRNM
 # - TestCases.txt
 # - expectedResults.txt
 
-python src/redactionAssitant/main.py
+python src/redactionAssistant/main.py
 ```
 
 Los resultados corregidos se guardan en `data/processed/`.
@@ -201,7 +240,7 @@ graph TD
 ```bash
 pip install pytest pytest-cov pytest-mock
 
-pytest --cov=src/redactionAssitant --cov-report=term-missing
+pytest --cov=src/redactionAssistant --cov-report=term-missing
 ```
 
 ### Estructura de tests

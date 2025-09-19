@@ -16,7 +16,7 @@
 
 ---
 
-### Issue 2: CI/CD con GitHub Actions (ruff + pytest + coverage)
+### Issue 2: CI/CD con GitHub Actions (ruff + pytest + coverage) [ HECHO]
 
 **Objetivo:** Pipeline CI ejecuta lint (ruff), tests y publica coverage como artefacto.
 **Criterios de aceptación:**
@@ -31,7 +31,7 @@
 
 ---
 
-### Issue 3: Logging estructurado + manejo de errores
+### Issue 3: Logging estructurado + manejo de errores 
 
 **Objetivo:** Estandarizar logs y robustecer `try/except` alrededor de lotes y llamadas LLM.
 **Criterios de aceptación:**
@@ -99,51 +99,4 @@
 * **Versionado semántico + releases** (`priority:low`, `area:release`, 2-3 días)
 * **Guías de contribución + templates** (`priority:low`, `area:community`, 3-4 días)
 
-
-
-Aspectos positivos
-Hay una suite de pruebas amplia que cubre los módulos principales (main, builder, processor, config y utilidades) con escenarios de éxito y de error, lo que facilita detectar regresiones sin depender de llamadas reales al LLM.
-
-Los módulos productivos están bien documentados y usan logging para trazar el flujo, algo clave cuando se orquesta procesamiento concurrente y dependencias externas.
-
-El README y el planner ofrecen una visión clara de arquitectura, roadmap y backlog priorizado, lo que facilita coordinar esfuerzos futuros.
-
-Problemas y oportunidades de mejora
-process_flow invoca Processor.exp_corregidos dos veces: primero con los CPS originales y luego con los corregidos, descartando el primer resultado. Esto duplica las llamadas al LLM, incrementa coste/latencia y mezcla feedback parcial antes de guardarlo.
-
-Tarea sugerida
-Invocar exp_corregidos una sola vez con CPS corregidos
-
-Iniciar tarea
-El pipeline de expected results usa cps.splitlines()/exp.splitlines() sin limpiar vacíos, por lo que rechaza pares válidos si hay líneas en blanco, y además envía listas completas a Builder.corregir_expect_result, cuyo prompt espera un texto, de modo que hoy el modelo recibe representaciones con corchetes y comillas.
-
-Tarea sugerida
-Sanear batches de expected results y ajustar el prompt
-
-Iniciar tarea
-La configuración ignora la variable HU_CODE descrita en el README y fija el prefijo a USRNM, lo que impide adaptar el sistema a diferentes nomenclaturas sin tocar código.
-
-Tarea sugerida
-Leer HU_CODE desde configuración
-
-Iniciar tarea
-El fichero requirements.txt está poblado con paquetes de entornos Conda específicos (file:///croot/...), muchos sin relación con el proyecto, lo que dificulta replicar el entorno con pip y aumenta el riesgo de vulnerabilidades no controladas.
-
-Tarea sugerida
-Depurar y normalizar requirements.txt
-
-Iniciar tarea
-Funcionalidades pendientes
-Quedan por abordar las iniciativas del roadmap (API web, soporte DOCX/PDF, base de datos, integraciones con herramientas de gestión, internacionalización, etc.), que todavía no tienen implementación en el código actual.
-
-El planner ya prioriza sprints futuros (CI/CD con linting, logging estructurado, fallback de proveedor LLM, API mínima) y puede servir como guía para ampliar capacidades una vez estabilizados los bugs inmediatos.
-
-Prioridades recomendadas
-Corregir el flujo de expected results (doble llamada y sanitización de batches), porque impacta directamente en costes y calidad del texto devuelto por el LLM.
-
-Ajustar la configuración (HU_CODE) para respetar parámetros de entorno y permitir escalar a distintos proyectos sin tocar código.
-
-Limpiar requirements.txt para garantizar instalaciones reproducibles y seguras.
-
-Una vez estabilizado lo anterior, retomar las tareas de observabilidad y resiliencia del planner (CI/CD, logging estructurado, fallback de proveedor) antes de atacar nuevas funcionalidades como la API.
 
