@@ -33,7 +33,7 @@ Automatizar la corrección ortográfica, gramatical y de estilo en casos de prue
 
 tests\_automation/
 ├── src/                       # Código fuente principal
-│   ├── redactionAssitant/     # Motor principal de corrección IA
+│   ├── redactionAssistant/     # Motor principal de corrección IA
 │   │   ├── main.py            # Punto de entrada del sistema
 │   │   ├── config.py          # Gestión de configuración centralizada
 │   │   ├── processor.py       # Procesamiento por lotes y concurrencia
@@ -192,7 +192,7 @@ Si hay errores, se mostrarán mensajes claros con instrucciones para corregirlos
 # - TestCases.txt
 # - expectedResults.txt
 
-python src/redactionAssitant/main.py
+python src/redactionAssistant/main.py
 ```
 
 Los resultados corregidos se guardan en `data/processed/`.
@@ -240,7 +240,7 @@ graph TD
 ```bash
 pip install pytest pytest-cov pytest-mock
 
-pytest --cov=src/redactionAssitant --cov-report=term-missing
+pytest --cov=src/redactionAssistant --cov-report=term-missing
 ```
 
 ### Estructura de tests

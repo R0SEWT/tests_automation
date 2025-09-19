@@ -1,5 +1,5 @@
 import logging
-from src.redactionAssitant import builder as b
+from src.redactionAssistant import builder as b
 from concurrent.futures import ThreadPoolExecutor
 import re 
 from openai import OpenAI  
