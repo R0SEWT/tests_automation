@@ -1,4 +1,5 @@
 .env
+config/*.env
 __py_cache__
 *.pyc
 *.pyo
@@ -24,3 +25,5 @@ notebooks/
 # Ignore Jupyter notebooks
 notebooks/
 **/.ipynb_checkpoints/
+
+chrome_profile/

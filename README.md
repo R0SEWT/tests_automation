@@ -2,7 +2,33 @@
 
 ## Descripción
 
-**Tests Automation** es un sistema diseñado para automatizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).
+**Tests Automation** es un sistema dis# 5. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tu API key
+
+# 6. Configurar Jira scraper (opcional)
+cp config/jira_config.env.example config/jira_config.env
+# Editar config/jira_config.env con la URL de Jira y las claves de issues
+```
+
+Ejemplo de `.env`:
+
+```ini
+DS_API_KEY=tu_api_key
+OPENAI_API_KEY=tu_openai_key
+PROVIDER=deepseek
+BATCH_SIZE=20
+HU_CODE=USRNM
+```
+
+Ejemplo de `config/jira_config.env`:
+
+```ini
+JIRA_BASE_URL=https://tu-jira-instance.com
+ISSUE_KEYS=VLPER-12345,VLPER-67890
+```
+
+> **Nota**: El archivo `config/jira_config.env` contiene información sensible y está excluido del control de versiones. Nunca lo subas al repositorio.atizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).
 
 ---
 
