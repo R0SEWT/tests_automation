@@ -2,33 +2,7 @@
 
 ## Descripción
 
-**Tests Automation** es un sistema dis# 5. Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tu API key
-
-# 6. Configurar Jira scraper (opcional)
-cp config/jira_config.env.example config/jira_config.env
-# Editar config/jira_config.env con la URL de Jira y las claves de issues
-```
-
-Ejemplo de `.env`:
-
-```ini
-DS_API_KEY=tu_api_key
-OPENAI_API_KEY=tu_openai_key
-PROVIDER=deepseek
-BATCH_SIZE=20
-HU_CODE=USRNM
-```
-
-Ejemplo de `config/jira_config.env`:
-
-```ini
-JIRA_BASE_URL=https://tu-jira-instance.com
-ISSUE_KEYS=VLPER-12345,VLPER-67890
-```
-
-> **Nota**: El archivo `config/jira_config.env` contiene información sensible y está excluido del control de versiones. Nunca lo subas al repositorio.atizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).
+**Tests Automation** es un sistema diseñado para automatizar y mejorar la documentación de pruebas de software mediante técnicas de inteligencia artificial. Combina procesamiento de lenguaje natural, parsers estructurados y automatización de flujos para optimizar el trabajo de Quality Assurance (QA).
 
 ---
 
@@ -38,26 +12,25 @@ ISSUE_KEYS=VLPER-12345,VLPER-67890
 Automatizar la corrección ortográfica, gramatical y de estilo en casos de prueba y resultados esperados, manteniendo coherencia técnica y reduciendo la carga de revisión manual.
 
 ### Objetivos específicos
-- Corrección automática de redacción y estilo en artefactos de QA.  
-- Procesamiento con IA (DeepSeek/OpenAI) preservando el contexto técnico.  
-- Pipeline automatizado desde entrada hasta salida corregida.  
-- Generación de reportes de cambios para trazabilidad.  
-- Soporte para extracción de historias de usuario en XML.  
+- Corrección automática de redacción y estilo en artefactos de QA.
+- Procesamiento con IA (DeepSeek/OpenAI) preservando el contexto técnico.
+- Pipeline automatizado desde entrada hasta salida corregida.
+- Generación de reportes de cambios para trazabilidad.
+- Soporte para extracción de historias de usuario en XML.
 
 ### Problemas que resuelve
-- Inconsistencias de redacción en documentación de pruebas.  
-- Errores ortográficos y gramaticales.  
-- Tiempos elevados de revisión manual.  
-- Ausencia de estándares en los resultados esperados.  
-- Procesamiento manual de historias de usuario.  
+- Inconsistencias de redacción en documentación de pruebas.
+- Errores ortográficos y gramaticales.
+- Tiempos elevados de revisión manual.
+- Ausencia de estándares en los resultados esperados.
+- Procesamiento manual de historias de usuario.
 
 ---
 
 ## Arquitectura del sistema
 
 ```
-
-tests\_automation/
+tests_automation/
 ├── src/                       # Código fuente principal
 │   ├── redactionAssistant/     # Motor principal de corrección IA
 │   │   ├── main.py            # Punto de entrada del sistema
@@ -65,28 +38,35 @@ tests\_automation/
 │   │   ├── processor.py       # Procesamiento por lotes y concurrencia
 │   │   ├── builder.py         # Construcción de prompts para IA
 │   │   └── utils.py           # Utilidades de I/O y manejo de datos
-│   ├── doc\_parser/            # Parser de documentos XML
-│   │   └── parser\_hu.py       # Extractor de historias de usuario
+│   ├── doc_parser/            # Parser de documentos XML
+│   │   └── parser_hu.py       # Extractor de historias de usuario
+│   ├── jira_import/           # Scraper de Jira
+│   │   └── jira_scraper.py    # Automatización de extracción de issues
 │   └── main.py                # Script principal alternativo
 ├── data/                      # Datos de entrada y salida
 │   ├── raw/                   # Archivos sin procesar
 │   └── processed/             # Archivos corregidos y feedback
 ├── notebooks/                 # Jupyter notebooks para análisis
 ├── utils/                     # Herramientas auxiliares
-└── config/                    # Archivos de configuración
-
-````
+├── config/                    # Archivos de configuración
+│   ├── jira_config.env.example # Ejemplo de configuración Jira
+│   └── jira_config.env        # Configuración Jira (ignorada por git)
+└── tests/                     # Suite de pruebas
+```
 
 ---
 
 ## Componentes principales
 
 ### RedactionAssistant (motor IA)
-Core del sistema, basado en LLMs para corrección y normalización de texto.  
+Core del sistema, basado en LLMs para corrección y normalización de texto.
 Incluye módulos de procesamiento concurrente, construcción de prompts y validación de integridad.
 
 ### Doc Parser (procesador XML)
 Parser que extrae historias de usuario desde XML y las convierte en estructuras procesables (JSON/CSV).
+
+### Jira Import (scraper)
+Automatización para extraer datos de issues desde Jira usando Playwright y perfiles de Chrome existentes.
 
 ### Testing Tools
 Scripts auxiliares para validación manual y pruebas web.
@@ -105,15 +85,19 @@ Prototipado, análisis y monitoreo de métricas.
 - pandas + xmltodict (procesamiento y normalización de datos)
 - concurrent.futures (procesamiento concurrente)
 
-**Testing**  
-- Pytest + pytest-cov + pytest-mock  
-- GitHub Actions (CI/CD)  
-- AutoHotkey (testing manual en Windows)  
+**Automatización Web**
+- Playwright (automatización de navegadores)
+- Selenium (compatibilidad legacy)
 
-**Gestión de datos**  
-- pathlib (manejo de rutas)  
-- python-dotenv (variables de entorno)  
-- logging (trazabilidad de procesos)  
+**Testing**
+- Pytest + pytest-cov + pytest-mock
+- GitHub Actions (CI/CD)
+- AutoHotkey (testing manual en Windows)
+
+**Gestión de datos**
+- pathlib (manejo de rutas)
+- python-dotenv (variables de entorno)
+- logging (trazabilidad de procesos)
 
 ---
 
@@ -121,22 +105,23 @@ Prototipado, análisis y monitoreo de métricas.
 
 ### Dependencias
 
-Las dependencias del proyecto se gestionan en `requirements.txt` con rangos
-semánticos para asegurar compatibilidad sin quedar atados a builds locales. Las
-bibliotecas utilizadas activamente en el código son:
+Las dependencias del proyecto se gestionan en `requirements.txt` con rangos semánticos para asegurar compatibilidad sin quedar atados a builds locales. Las bibliotecas utilizadas activamente en el código son:
 
 - `beautifulsoup4` y `lxml` para parsear XML.
 - `openai` como cliente para DeepSeek/OpenAI.
 - `pandas` para normalización tabular de las HU.
 - `python-dotenv` para la carga de variables de entorno.
 - `xmltodict` para convertir estructuras XML a diccionarios.
+- `playwright` para automatización web.
 - `pytest`, `pytest-cov` y `pytest-mock` para la suite de pruebas.
 
 ### Requisitos previos
 - Python 3.10 o superior
 - API Key válida (DeepSeek u OpenAI)
+- Google Chrome instalado (para Jira scraper)
 
-### Pasos
+### Pasos de instalación
+
 ```bash
 # 1. Clonar el repositorio
 git clone https://github.com/R0SEWT/tests_automation.git
@@ -150,16 +135,24 @@ source .venv/bin/activate  # Linux/Mac
 # 3. Instalar dependencias
 pip install -r requirements.txt
 
-# 4. Verificar la instalación de dependencias
+# 4. Instalar navegadores para Playwright
+playwright install chromium
+
+# 5. Verificar la instalación de dependencias
 pip check
 
-# 5. Configurar variables de entorno
+# 6. Configurar variables de entorno
 cp .env.example .env
 # Editar .env con tu API key
-````
 
-Ejemplo de `.env`:
+# 7. Configurar Jira scraper (opcional)
+cp config/jira_config.env.example config/jira_config.env
+# Editar config/jira_config.env con la URL de Jira y las claves de issues
+```
 
+### Ejemplos de configuración
+
+**Archivo `.env`:**
 ```ini
 DS_API_KEY=tu_api_key
 OPENAI_API_KEY=tu_openai_key
@@ -168,7 +161,13 @@ BATCH_SIZE=20
 HU_CODE=USRNM
 ```
 
-> Nota: si `HU_CODE` no está definida en tu entorno, el sistema utilizará `USRNM` como prefijo por defecto. Configura esta variable si necesitas personalizar el código de historia de usuario.
+**Archivo `config/jira_config.env`:**
+```ini
+JIRA_BASE_URL=https://tu-jira-instance.com
+ISSUE_KEYS=VLPER-12345,VLPER-67890
+```
+
+> **Nota**: El archivo `config/jira_config.env` contiene información sensible y está excluido del control de versiones. Nunca lo subas al repositorio.
 
 ---
 
@@ -229,6 +228,15 @@ Los resultados corregidos se guardan en `data/processed/`.
 python src/doc_parser/parser_hu.py
 ```
 
+### Extracción de datos desde Jira
+
+```bash
+# Asegúrate de tener Chrome ejecutándose con tu sesión de Jira iniciada
+python src/main.py
+```
+
+Los datos extraídos se guardan en `data/raw/hus/` como archivos JSON.
+
 ### Testing manual automatizado (Windows)
 
 Ejecutar el script `manual_testing2.ahk`.
@@ -247,6 +255,8 @@ graph TD
     F --> G[Archivos corregidos]
     H[XML] --> I[Parser]
     I --> J[Estructuración de datos]
+    K[Jira Issues] --> L[Scraper]
+    L --> M[JSON Export]
 ```
 
 ---
@@ -285,14 +295,12 @@ tests/
 ## Roadmap
 
 **Versión 2.0**
-
 * Interfaz web con FastAPI/Flask
 * Soporte para DOCX/PDF
 * Base de datos para historial de correcciones
 * API REST para integración externa
 
 **Versión 3.0**
-
 * Aprendizaje automático para mejora continua
 * Integración con JIRA/Azure DevOps
 * Dashboard de métricas en tiempo real
