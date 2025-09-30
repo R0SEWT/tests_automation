@@ -132,6 +132,7 @@ class JiraScraper:
                 logger.warning(f"Could not extract description for {issue_key}: {e}")
             
             return {
+                "issue_key": issue_key,
                 "title": title,
                 "link": issue_url,
                 "description": description
@@ -151,6 +152,7 @@ class JiraScraper:
                 if not self.context:
                     logger.error(f"Browser context closed, cannot extract data for {key}")
                     hus.append({
+                        "issue_key": key,
                         "title": key,
                         "link": f"{self.base_url}/browse/{key}",
                         "description": "Browser context was closed"
@@ -164,6 +166,7 @@ class JiraScraper:
                 logger.error(f"Failed to extract data for {key}: {e}")
                 # Agregar un placeholder
                 hus.append({
+                    "issue_key": key,
                     "title": key,
                     "link": f"{self.base_url}/browse/{key}",
                     "description": f"Error extracting data: {str(e)}"
