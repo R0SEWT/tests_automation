@@ -89,8 +89,7 @@ class BasicXMLParserStrategy(XMLParserStrategy):
 
     def parse_content(self, xml_content: str) -> Dict[str, Any]:
         xml_soup = get_xml_soup(xml_content)
-        xml_dict = get_xml_dict(xml_soup)
-        return xml_dict
+        return get_xml_dict(xml_soup)
 
 class HURepository:
     def __init__(self, parser_strategy: XMLParserStrategy):
