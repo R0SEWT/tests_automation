@@ -50,23 +50,23 @@ Examples:
         return
     
     if args.analyze:
-        print("🔍 Analyzing HU Configuration...")
+        print(" Analyzing HU Configuration...")
         os.system("python examples/analyze_hu_config.py")
     
     elif args.extract:
-        print("📥 Extracting HU Content...")
+        print(" Extracting HU Content...")
         os.system("python scripts/extract_hu_content.py")
     
     elif args.pipeline:
-        print("🔄 Running HU Processing Pipeline...")
+        print(" Running HU Processing Pipeline...")
         os.system("python scripts/hu_pipeline.py")
     
     elif args.integrated:
-        print("🚀 Running Integrated HU Correction Pipeline...")
+        print(" Running Integrated HU Correction Pipeline...")
         os.system("python scripts/integrated_hu_correction_pipeline.py")
     
     elif args.demo:
-        print("🎯 Running Excel Extraction Demo...")
+        print(" Running Excel Extraction Demo...")
         os.system("python examples/demo_excel_extractor.py")
 
 
