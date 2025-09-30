@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 async def main():
     logger.info("Iniciando scraper de Jira")
-    
     # Load configuration
     load_dotenv('config/jira_config.env')
     
@@ -34,7 +33,7 @@ async def main():
         logger.info(f"Extraídos {len(hu_list)} HUs")
         
         # Crear directorio si no existe
-        output_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'raw', 'hus')
+        output_dir = os.path.join(os.path.dirname(__file__), '..', 'data', 'raw', 'hus')
         os.makedirs(output_dir, exist_ok=True)
         logger.info(f"Directorio de salida: {output_dir}")
         
@@ -50,5 +49,9 @@ async def main():
             
             print(f"Saved HU: {hu['title']} to {filepath}")
     finally:
-        # No cerrar el contexto para mantener la sesión de Chrome abierta
+        # Limpiar recursos pero mantener la sesión de Chrome abierta
+        await scraper.cleanup()
         logger.info("Sesión de Chrome mantenida abierta para futuras ejecuciones")
+
+if __name__ == "__main__":
+    asyncio.run(main())
