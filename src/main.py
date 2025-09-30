@@ -50,8 +50,11 @@ async def main():
             print(f"Saved HU: {hu['title']} to {filepath}")
     finally:
         # Limpiar recursos pero mantener la sesión de Chrome abierta
-        await scraper.cleanup()
-        logger.info("Sesión de Chrome mantenida abierta para futuras ejecuciones")
+        try:
+            await scraper.cleanup()
+            logger.info("Sesión de Chrome mantenida abierta para futuras ejecuciones")
+        except Exception as cleanup_exc:
+            logger.error(f"Error durante la limpieza de recursos: {cleanup_exc}", exc_info=True)
 
 if __name__ == "__main__":
     asyncio.run(main())
