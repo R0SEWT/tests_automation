@@ -224,13 +224,13 @@ corrected_file, results = generate_corrected_excel_file(
 # Resultado: Archivo con casos de prueba profesionales y bien redactados
 ```
 
-### 2. Standardización de Documentación
+### 2. Estandarización de Documentación
 ```python
-# Standardizar múltiples archivos de diferentes equipos
+# Estandarizar múltiples archivos de diferentes equipos
 for file_path in ['team_a.xlsx', 'team_b.xlsx', 'team_c.xlsx']:
     corrected_file, _ = generate_corrected_excel_file(
         file_path,
-        output_path=f'standardized/{Path(file_path).stem}_standard.xlsx'
+        output_path=f'estandarizado/{Path(file_path).stem}_estandar.xlsx'
     )
 ```
 
