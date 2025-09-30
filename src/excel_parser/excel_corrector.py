@@ -519,9 +519,11 @@ class ExcelCorrector:
                     })
         
         # Save summary
-        with open(summary_path, 'w', encoding='utf-8') as f:
-            json.dump(summary, f, indent=2, ensure_ascii=False)
-        
+        try:
+            with open(summary_path, 'w', encoding='utf-8') as f:
+                json.dump(summary, f, indent=2, ensure_ascii=False)
+        except (OSError, IOError) as e:
+            logging.error(f"Failed to write summary to {summary_path}: {e}")
         self.logger.info("Correction summary saved: %s", summary_path)
 
 
