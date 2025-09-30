@@ -1,5 +1,6 @@
 import os
 import asyncio
+import platform
 from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 from typing import List, Dict, Any, Optional
 import logging
@@ -11,10 +12,11 @@ class JiraScraper:
     def __init__(self, base_url: Optional[str] = None):
         # Load configuration from environment
         load_dotenv('config/jira_config.env')
-        
-        self.base_url = base_url or os.getenv('JIRA_BASE_URL', 'https://jira.visma.com')
+
+        self.base_url = base_url or os.getenv('JIRA_BASE_URL', 'https://configurar_en_el_jira_config.com')
         self.context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
+        self.playwright = None
 
     async def __aenter__(self):
         await self._setup_browser()
@@ -26,17 +28,22 @@ class JiraScraper:
 
     async def _setup_browser(self):
         """Configura el navegador con un contexto persistente usando el perfil de Chrome existente."""
-        playwright = await async_playwright().start()
+        self.playwright = await async_playwright().start()
         
         # Usar el perfil de Chrome existente para reutilizar la sesión
-        user_data_dir = os.path.expanduser("~/.config/google-chrome/Default")
+        if platform.system() == "Windows":
+            user_data_dir = os.path.expanduser("~/AppData/Local/Google/Chrome/User Data/Default")
+        elif platform.system() == "Darwin":  # macOS
+            user_data_dir = os.path.expanduser("~/Library/Application Support/Google/Chrome/Default")
+        else:  # Linux and others
+            user_data_dir = os.path.expanduser("~/.config/google-chrome/Default")
         
         if not os.path.exists(user_data_dir):
             raise FileNotFoundError(f"El directorio de perfil de Chrome no existe: {user_data_dir}")
         
         logger.info(f"Usando perfil de Chrome existente: {user_data_dir}")
         
-        self.context = await playwright.chromium.launch_persistent_context(
+        self.context = await self.playwright.chromium.launch_persistent_context(
             user_data_dir=user_data_dir,
             headless=False,  # Necesitamos ver el navegador para verificar la sesión
             args=[
@@ -167,3 +174,11 @@ class JiraScraper:
         """Cierra el navegador."""
         if self.context:
             await self.context.close()
+        if self.playwright:
+            await self.playwright.stop()
+
+    async def cleanup(self):
+        """Limpia recursos sin cerrar el contexto persistente."""
+        if self.playwright:
+            await self.playwright.stop()
+            self.playwright = None
