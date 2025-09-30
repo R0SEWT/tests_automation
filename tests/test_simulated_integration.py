@@ -9,7 +9,11 @@ Uses mock data to test the RedactionAssistant integration.
 import asyncio
 import logging
 import json
+import sys
 from pathlib import Path
+
+# Add scripts to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from integrated_hu_correction_pipeline import IntegratedHUCorrectionPipeline
 
