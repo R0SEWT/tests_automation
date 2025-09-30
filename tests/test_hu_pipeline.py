@@ -8,7 +8,11 @@ Tests the HU processing pipeline components individually and then together.
 import asyncio
 import logging
 import json
+import sys
 from pathlib import Path
+
+# Add scripts to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from hu_pipeline import HUProcessingPipeline
 
