@@ -33,6 +33,8 @@ Sistema completo de automatización pa### Patrones de Diseño
 - **Extracción de Excel**: Procesa archivos Excel para extraer casos de prueba con identificación automática de columnas
 - **Análisis de HU**: Analiza configuraciones de Historias de Usuario y detecta patrones automáticamente
 - **Integración Jira**: Extrae contenido de HU directamente desde Jira usando scraping automatizado
+- **Corrección de Excel**: Sistema completo para generar copias corregidas de archivos Excel con highlighting visual
+- **API Mockeada**: MockedExcelCorrectionBuilder que simula correcciones inteligentes sin APIs externas
 - **Corrección Automatizada**: Integra RedactionAssistant para corrección automática de contenido
 - **Procesamiento por Lotes**: Manejo eficiente de grandes volúmenes de datos
 - **CLI Unificada**: Interfaz de línea de comandos simple y potente
@@ -40,8 +42,9 @@ Sistema completo de automatización pa### Patrones de Diseño
 ### Capacidades Técnicas
 
 - **1,646+ casos de prueba** extraídos en segundos
+- **2,159 correcciones** aplicadas con highlighting visual
 - **47 HUs** procesadas simultáneamente
-- **72 tests** automatizados con cobertura completa
+- **87 tests** automatizados con cobertura completa
 - **Arquitectura modular** con clases base abstractas
 - **Manejo robusto de errores** con logging detallado
 
@@ -55,16 +58,20 @@ tests_automation/
 │   ├── core/                     # Clases base y utilidades
 │   │   ├── base.py              # Clases abstractas (BaseExtractor, BaseProcessor)
 │   │   └── utils.py             # Utilidades centralizadas (Logger, FileManager)
-│   ├── excel_parser/            # Extracción de casos de prueba desde Excel
+│   ├── excel_parser/            # Extracción y corrección de casos de prueba desde Excel
+│   │   ├── excel_extractor.py  # Extractor de casos de prueba
+│   │   └── excel_corrector.py  # Corrector con API mockeada
 │   ├── jira_import/             # Scraping e importación desde Jira
 │   ├── redactionAssistant/      # Sistema de corrección automatizada
 │   └── hu_config_manager.py     # Gestión de configuraciones HU
 ├── scripts/                     # Scripts ejecutables
 │   ├── extract_hu_content.py   # Extracción de contenido HU
 │   ├── hu_pipeline.py          # Pipeline de procesamiento
+│   ├── simple_excel_correction_pipeline.py  # Pipeline de corrección Excel
 │   └── integrated_hu_correction_pipeline.py
 ├── examples/                    # Ejemplos y demos
 │   ├── demo_excel_extractor.py # Demo de extracción Excel
+│   ├── demo_excel_corrector.py # Demo de corrección Excel
 │   └── analyze_hu_config.py    # Análisis de configuración HU
 ├── tests/                       # Suite completa de tests
 ├── data/                        # Datos de entrada y salida
@@ -220,6 +227,30 @@ extractor.save_to_json("output/test_cases.json", test_cases)
 - **Descripción**: `description`, `desc`, `test description`, `descripción`
 - **Resultado Esperado**: `expected`, `expectedresult`, `resultado_esperado`
 
+### Excel Corrector
+
+Sistema completo para generar copias corregidas de archivos Excel con API mockeada:
+
+```python
+from src.excel_parser.excel_corrector import generate_corrected_excel_file
+
+# Generar Excel corregido con highlighting
+corrected_file, results = generate_corrected_excel_file(
+    'data/mi_archivo.xlsx',
+    highlight_changes=True,
+    use_mock=True
+)
+
+# Pipeline completo de corrección
+python scripts/simple_excel_correction_pipeline.py data/mi_archivo.xlsx
+```
+
+**Características del Corrector:**
+- **MockedExcelCorrectionBuilder**: Simula correcciones ortográficas y gramaticales
+- **Highlighting Visual**: Resalta celdas modificadas en amarillo
+- **Preservación de Datos**: Mantiene estructura y formato original
+- **Análisis de Calidad**: Genera métricas automáticas de calidad
+
 ### Jira Integration
 
 Extrae contenido de HU directamente desde Jira:
@@ -289,8 +320,9 @@ pytest -v
 
 ### Suite de Tests
 
-- **Total Tests**: 72
+- **Total Tests**: 87
 - **test_excel_extractor.py**: 10 tests - Extracción Excel
+- **test_excel_corrector.py**: 15 tests - Corrección Excel
 - **test_config.py**: Tests de configuración
 - **test_processor.py**: Tests de procesamiento
 - **test_utils.py**: Tests de utilidades
@@ -552,17 +584,18 @@ python -m pytest tests/test_excel_extractor.py -v
 
 ### Estadísticas de Código
 
-- **Líneas de código**: ~3,000+
-- **Archivos Python**: 25+
-- **Clases**: 15+
-- **Funciones**: 100+
-- **Tests**: 72
+- **Líneas de código**: ~4,000+
+- **Archivos Python**: 27+
+- **Clases**: 17+
+- **Funciones**: 120+
+- **Tests**: 87
 
 ### Rendimiento
 
 - **Extracción Excel**: 1,646 casos en ~30 segundos
+- **Corrección Excel**: 2,159 correcciones en ~45 segundos
 - **Análisis HU**: 47 HUs en ~1 segundo
-- **Tests**: 72 tests en ~10 segundos
+- **Tests**: 87 tests en ~12 segundos
 - **Memoria**: < 100MB uso típico
 
 ### Cobertura de Tests
@@ -575,10 +608,11 @@ pytest --cov=src --cov-report=html
 ## Estado del Proyecto
 
 - **Extracción Excel**: Completa y probada
+- **Corrección Excel**: Sistema completo con API mockeada implementado
 - **Integración Jira**: Funcional con scraping automatizado
 - **Pipeline de Procesamiento**: Operacional
 - **Corrección IA**: Integrada con RedactionAssistant  
-- **Tests de Integración**: 1,646 casos de prueba procesados
+- **Tests de Integración**: 1,646 casos de prueba procesados, 2,159 correcciones aplicadas
 - **Refactorización**: Arquitectura limpia implementada
 - **Validación Completa**: Todos los sistemas funcionando
 
