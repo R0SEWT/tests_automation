@@ -40,6 +40,9 @@ tests_automation/
 │   │   └── utils.py           # Utilidades de I/O y manejo de datos
 │   ├── doc_parser/            # Parser de documentos XML
 │   │   └── parser_hu.py       # Extractor de historias de usuario
+│   ├── excel_parser/          # Parser de archivos Excel
+│   │   ├── __init__.py        # Inicialización del módulo
+│   │   └── excel_extractor.py # Extractor de casos de prueba Excel
 │   ├── jira_import/           # Scraper de Jira
 │   │   └── jira_scraper.py    # Automatización de extracción de issues
 │   └── main.py                # Script principal alternativo
@@ -62,8 +65,8 @@ tests_automation/
 Core del sistema, basado en LLMs para corrección y normalización de texto.
 Incluye módulos de procesamiento concurrente, construcción de prompts y validación de integridad.
 
-### Doc Parser (procesador XML)
-Parser que extrae historias de usuario desde XML y las convierte en estructuras procesables (JSON/CSV).
+### Excel Parser (procesador Excel)
+Extractor que lee archivos Excel organizados por worksheets y extrae casos de prueba y resultados esperados en formato estructurado (JSON).
 
 ### Jira Import (scraper)
 Automatización para extraer datos de issues desde Jira usando Playwright y perfiles de Chrome existentes.
@@ -228,6 +231,22 @@ Los resultados corregidos se guardan en `data/processed/`.
 python src/doc_parser/parser_hu.py
 ```
 
+### Extracción de casos de prueba desde Excel
+
+```bash
+# Usando el módulo directamente
+python -c "
+from src.excel_parser.excel_extractor import extract_from_excel_file
+result = extract_from_excel_file('path/to/test_cases.xlsx')
+print(f'Results saved to: {result}')
+"
+
+# O usando el script de demo
+python demo_excel_extractor.py
+```
+
+Los casos de prueba extraídos se guardan en `data/processed/` como archivos JSON organizados por worksheet.
+
 ### Extracción de datos desde Jira
 
 ```bash
@@ -294,18 +313,11 @@ tests/
 
 ## Roadmap
 
-**Versión 2.0**
-* Interfaz web con FastAPI/Flask
-* Soporte para DOCX/PDF
-* Base de datos para historial de correcciones
-* API REST para integración externa
-
-**Versión 3.0**
-* Aprendizaje automático para mejora continua
-* Integración con JIRA/Azure DevOps
-* Dashboard de métricas en tiempo real
-* Soporte multi-idioma
-
+- ✅ Ingresa las HUS y expect results desde el excel
+- 🔄 Integración completa con RedactionAssistant
+- 🔄 Interfaz web para gestión de correcciones
+- 🔄 API REST para procesamiento automatizado
+- 🔄 Dashboard de métricas y analytics Extraer lo
 ---
 
 ## Licencia
