@@ -124,9 +124,12 @@ class HUProcessingPipeline:
 
             if summary['success']:
                 logger.info(f"✅ Successfully extracted {summary['total_extracted']} HU contents")
-                self.extracted_hu_content = [summary['content_mapping'][hu_code]
-                                           for hu_code in self.hu_manager.get_available_hu_codes()
-                                           if hu_code in summary['content_mapping']]
+                self.extracted_hu_content = []
+                for hu_code in self.hu_manager.get_available_hu_codes():
+                    if hu_code in summary['content_mapping']:
+                        hu_data = summary['content_mapping'][hu_code].copy()
+                        hu_data['hu_code'] = hu_code
+                        self.extracted_hu_content.append(hu_data)
                 return self.extracted_hu_content
             else:
                 logger.error(f"❌ HU content extraction failed: {summary.get('message')}")
