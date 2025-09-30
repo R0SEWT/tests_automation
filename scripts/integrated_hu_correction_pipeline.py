@@ -12,6 +12,11 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent))
+
 from hu_pipeline import HUProcessingPipeline
 from src.redactionAssistant.config import Config
 from src.redactionAssistant.processor import Processor

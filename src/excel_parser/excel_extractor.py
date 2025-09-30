@@ -52,6 +52,8 @@ class ExcelTestExtractor(BaseExtractor):
         super().__init__(file_path)
         self.workbook = None
         self._file_path = Path(file_path)
+        # Load the workbook automatically
+        self.load_workbook()
 
     @property
     def file_path(self) -> Path:
@@ -96,7 +98,8 @@ class ExcelTestExtractor(BaseExtractor):
             True if successful, False otherwise
         """
         try:
-            self.workbook = str(self.file_path)
+            import openpyxl
+            self.workbook = openpyxl.load_workbook(str(self.file_path))
             self.logger.info(f"Loaded workbook: {self.file_path}")
             return True
         except Exception as e:
@@ -115,9 +118,8 @@ class ExcelTestExtractor(BaseExtractor):
             return []
         
         try:
-            # Use pandas to get sheet names
-            excel_file = pd.ExcelFile(self.workbook)
-            return [str(name) for name in excel_file.sheet_names]
+            # Use openpyxl to get sheet names
+            return list(self.workbook.sheetnames)
         except Exception as e:
             self.logger.error(f"Failed to get sheet names: {e}")
             return []
@@ -165,7 +167,7 @@ class ExcelTestExtractor(BaseExtractor):
     def _read_worksheet(self, worksheet_name: str) -> Optional[pd.DataFrame]:
         """Read and preprocess a worksheet."""
         try:
-            df = pd.read_excel(self.workbook, sheet_name=worksheet_name)
+            df = pd.read_excel(str(self.file_path), sheet_name=worksheet_name)
             # Clean column names (remove extra spaces, standardize case)
             df.columns = df.columns.str.strip().str.title()
             return df

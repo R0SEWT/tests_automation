@@ -13,6 +13,10 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from src.hu_config_manager import HUConfigurationManager
 from src.jira_import.jira_scraper import JiraScraper
 from src.core.base import BaseExtractor, ExtractionError

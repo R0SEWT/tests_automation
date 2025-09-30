@@ -10,27 +10,45 @@ import sys
 import os
 from pathlib import Path
 
-# Add the src directory to the path so we can import our modules
-sys.path.insert(0, str(Path(__file__).parent / 'src'))
+# Add the project root directory to the path so we can import our modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from excel_parser.excel_extractor import ExcelTestExtractor, extract_from_excel_file
+from src.excel_parser.excel_extractor import ExcelTestExtractor, extract_from_excel_file
 
 
 def demo_basic_extraction():
     """Demonstrate basic extraction from an Excel file."""
     print("=== Excel Test Case Extractor Demo ===\n")
 
-    # Example Excel file path (you would replace this with your actual file)
-    excel_file = "path/to/your/test_cases.xlsx"
-
-    if not Path(excel_file).exists():
-        print(f"Excel file not found: {excel_file}")
-        print("Please update the excel_file path in this script.")
+    # Example Excel file path (try common locations)
+    possible_files = [
+        "data/USERNAME.xlsx",
+        "../data/USERNAME.xlsx",
+        "path/to/your/test_cases.xlsx"
+    ]
+    
+    excel_file = None
+    for file_path in possible_files:
+        if Path(file_path).exists():
+            excel_file = file_path
+            break
+    
+    if not excel_file:
+        print("Excel file not found in common locations:")
+        for file_path in possible_files:
+            print(f"  - {file_path}")
+        print("Please ensure you have a USERNAME.xlsx file in the data/ directory.")
+        print("This demo shows how the ExcelTestExtractor works.")
         return
 
     try:
         # Create extractor instance
         extractor = ExcelTestExtractor(excel_file)
+        
+        # Load the workbook
+        if not extractor.load_workbook():
+            print("Failed to load Excel workbook")
+            return
 
         # Show available worksheets
         worksheets = extractor.get_worksheet_names()
@@ -66,12 +84,23 @@ def demo_convenience_function():
     """Demonstrate using the convenience function."""
     print("\n=== Convenience Function Demo ===\n")
 
-    excel_file = "path/to/your/test_cases.xlsx"
-    output_dir = "data/processed"
-
-    if not Path(excel_file).exists():
-        print(f"Excel file not found: {excel_file}")
+    # Try to find an Excel file
+    possible_files = [
+        "data/USERNAME.xlsx",
+        "../data/USERNAME.xlsx"
+    ]
+    
+    excel_file = None
+    for file_path in possible_files:
+        if Path(file_path).exists():
+            excel_file = file_path
+            break
+    
+    if not excel_file:
+        print("Excel file not found. This would demonstrate the convenience function.")
         return
+    
+    output_dir = "data/processed"
 
     try:
         output_file = extract_from_excel_file(excel_file, output_dir)
