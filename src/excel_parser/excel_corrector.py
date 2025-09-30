@@ -352,10 +352,12 @@ class ExcelCorrector:
                     _, exp_part = line.split(':', 1)
                     corrected_expected.append(exp_part.strip())
         
-        # Ensure we have the same number of corrections as inputs
-        while len(corrected_expected) < len(expected_results):
-            corrected_expected.append(expected_results[len(corrected_expected)])
-        
+        # Check for mismatch in number of corrections and inputs
+        if len(corrected_expected) != len(expected_results):
+            logging.warning(
+                "Mismatch between number of corrected expected results (%d) and input expected results (%d).",
+                len(corrected_expected), len(expected_results)
+            )
         return corrected_expected[:len(expected_results)]
     
     def generate_corrected_excel(self, output_path: Optional[str] = None, highlight_changes: bool = True) -> str:
