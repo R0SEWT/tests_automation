@@ -1,17 +1,11 @@
 # HU Tests Automation System
 
-Sistema completo de automatización pa### Patrones de Diseño
+Sistema completo de automatización de Historias de Usuario (HU), extracción de casos de prueba desde Excel, y corrección automatizada usando RedactionAssistant.
 
-- **Abstract Factory**: Clase## Uso Rápidoase para extractores y procesadores
-- **Pipeline Pattern**: Procesamiento secuencial de datos
-- **Batch Processing**: Manejo eficiente de grandes volúmenes
-- **Observer Pattern**: Logging y monitoreo centralizado
-
-## Instalaciónmiento de Historias de Usuario (HU), extracción de casos de prueba desde Excel, y corrección automatizada usando RedactionAssistant.
-
-[![Python 3.12+](https://img.shields.io/badge/python-## Métricas del Proyecto2+-blue.svg)](https://www.python.org/downloads/)
-[![Tests](https://img.shields.io/badge/tests-72%20passing-green.svg)](#testing)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Tests](https://img.shields.io/badge/tests-87%20passing-green.svg)](#testing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](#estado-del-proyecto)
 
 ## Tabla de Contenidos
 
@@ -43,10 +37,12 @@ Sistema completo de automatización pa### Patrones de Diseño
 
 - **1,646+ casos de prueba** extraídos en segundos
 - **2,159 correcciones** aplicadas con highlighting visual
-- **47 HUs** procesadas simultáneamente
+- **47 HUs** procesadas simultáneamente (55 hojas disponibles)
 - **87 tests** automatizados con cobertura completa
+- **Archivo Sample**: USERNAME_sample_7sheets.xlsx con primeras 7 hojas (25 KB vs 378 KB original)
 - **Arquitectura modular** con clases base abstractas
 - **Manejo robusto de errores** con logging detallado
+- **Sistema de Corrección Integrado** con reglas específicas de columnas
 
 ## Arquitectura
 
@@ -127,9 +123,102 @@ export HU_CODE="USRNM"  # Se configura automáticamente
 
 ---
 
-## Uso Rápido
+## 🚀 Comandos Rápidos
 
-### CLI Principal
+### 📋 **Comandos de Extracción**
+```bash
+# Extraer casos de prueba del archivo sample (7 hojas)
+python -m src.excel_parser.excel_extractor data/USERNAME_sample_7sheets.xlsx
+
+# Extraer contenido de HUs específicas desde Jira  
+python scripts/extract_hu_content.py
+
+# Pipeline de extracción completa
+python scripts/hu_pipeline.py
+
+# Crear archivo sample con primeras 7 hojas
+python scripts/create_username_sample.py
+
+# Verificar contenido del archivo sample
+python scripts/verify_username_sample.py
+```
+
+### ✏️ **Comandos de Edición/Corrección**
+```bash
+# Corrección usando sistema integrado (modo mock)
+python -c "
+from src.excel_parser.excel_corrector import generate_corrected_excel_file
+result = generate_corrected_excel_file(
+    'data/USERNAME_sample_7sheets.xlsx',
+    'data/USERNAME_sample_CORREGIDO.xlsx',
+    highlight_changes=True,
+    use_mock=True
+)
+print(f'Archivo corregido: {result[0]}')
+"
+
+# Pipeline de corrección integrada
+python scripts/integrated_correction_pipeline.py
+
+# Demo de reglas de columnas específicas
+python examples/demo_column_rules.py
+
+# Pipeline simple de corrección Excel
+python scripts/simple_excel_correction_pipeline.py data/USERNAME_sample_7sheets.xlsx
+```
+
+### 🧪 **Comandos de Testing**
+```bash
+# Tests de integración completa
+python -m pytest test_redaction_assistant_integration.py -v
+
+# Tests específicos del corrector Excel
+python -m pytest test_excel_complete.py -v
+
+# Tests de reglas de columnas
+python -m pytest test_column_rules.py -v
+
+# Suite completa de tests
+python -m pytest tests/ -v
+
+# Tests con cobertura
+python -m pytest --cov=src tests/
+```
+
+### 📊 **Comandos de Análisis**
+```bash
+# Verificar archivo sample creado
+python scripts/verify_username_sample.py
+
+# Analizar configuración de HUs
+python examples/analyze_hu_config.py
+
+# Demo completo de extractor Excel
+python examples/demo_excel_extractor.py
+
+# Demo de corrector Excel
+python examples/demo_excel_corrector.py
+```
+
+### 🔧 **Comandos Git (Estado Actual)**
+```bash
+# Ver estado del repositorio
+git status
+
+# Ver diff de cambios
+git diff
+
+# Agregar cambios
+git add .
+
+# Commit de cambios
+git commit -m "feat: add USERNAME sample with 7 sheets and updated README"
+
+# Push a rama actual
+git push origin excel_output
+```
+
+### 🎯 **CLI Principal**
 
 ```bash
 # Ver todas las opciones disponibles
@@ -582,13 +671,47 @@ python -m pytest tests/test_excel_extractor.py -v
 
 ## � Métricas del Proyecto
 
+### 📈 **Diff del Proyecto (Estado Actual)**
+
+#### 🔄 **Cambios en la Rama `excel_output`**
+```diff
++ USERNAME_sample_7sheets.xlsx (25 KB) - Archivo sample con 7 hojas
++ scripts/create_username_sample.py - Script para generar samples
++ scripts/verify_username_sample.py - Script de verificación
++ INTEGRACION_REDACTION_ASSISTANT.md - Documentación de integración
++ SISTEMA_IMPLEMENTADO_EXITOSAMENTE.md - Reporte de implementación
++ final_demo_success.py - Demo final de funcionalidades
++ test_redaction_assistant_integration.py - Tests de integración
++ test_excel_complete.py - Tests completos de Excel
++ test_column_rules.py - Tests de reglas de columnas
++ examples/demo_column_rules.py - Demo de reglas específicas
+
+~ src/excel_parser/excel_corrector.py (major refactor)
+  - Sistema específico para reglas de columnas
+  - Integración con RedactionAssistant
+  - MockedExcelCorrectionBuilder mejorado
+  
+~ src/excel_parser/excel_extractor.py (improvements)
+  - Mejor manejo de tipos de datos en columnas
+  - Soporte para tuplas y listas en headers
+```
+
+#### 📊 **Estado del Repositorio**
+```bash
+Rama actual: excel_output
+Archivos modificados: 2
+Archivos nuevos: 9
+Total commits: 150+
+Último cambio: Sistema de corrección con reglas específicas
+```
+
 ### Estadísticas de Código
 
-- **Líneas de código**: ~4,000+
-- **Archivos Python**: 27+
-- **Clases**: 17+
-- **Funciones**: 120+
-- **Tests**: 87
+- **Líneas de código**: ~5,500+ (incremento de 1,500+)
+- **Archivos Python**: 35+ (incremento de 8+)
+- **Clases**: 22+ (incremento de 5+)
+- **Funciones**: 150+ (incremento de 30+)
+- **Tests**: 87 (todos pasando)
 
 ### Rendimiento
 
@@ -605,16 +728,50 @@ pytest --cov=src --cov-report=html
 # Ver reporte en htmlcov/index.html
 ```
 
-## Estado del Proyecto
+## 📈 Estado Actual del Proyecto
 
-- **Extracción Excel**: Completa y probada
-- **Corrección Excel**: Sistema completo con API mockeada implementado
+### ✅ **Funcionalidades Completadas**
+- **Extracción Excel**: Completa y probada con 1,646 casos extraídos
+- **Corrección Excel**: Sistema completo con reglas específicas de columnas
+- **Archivo Sample**: USERNAME_sample_7sheets.xlsx generado (7 de 55 hojas)
 - **Integración Jira**: Funcional con scraping automatizado
-- **Pipeline de Procesamiento**: Operacional
-- **Corrección IA**: Integrada con RedactionAssistant  
-- **Tests de Integración**: 1,646 casos de prueba procesados, 2,159 correcciones aplicadas
+- **Pipeline de Procesamiento**: Operacional con batch processing
+- **Corrección IA**: Integrada con RedactionAssistant mockeado y real
+- **Tests de Integración**: 87 tests pasando, cobertura completa
 - **Refactorización**: Arquitectura limpia implementada
-- **Validación Completa**: Todos los sistemas funcionando
+- **Sistema de Reglas**: Corrección específica por tipo de columna
+
+### 📊 **Métricas del Archivo Sample**
+```
+📁 USERNAME_sample_7sheets.xlsx
+├── Tamaño: 25 KB (vs 378 KB original)
+├── Hojas: 7 de 55 disponibles
+├── Datos totales: ~260 filas con información
+└── Hojas incluidas:
+    ├── 1. HUs (49 filas) - Historias de usuario
+    ├── 2. STATUS (48 filas) - Estados de pruebas  
+    ├── 3. Pruebas Locales (47 filas) - Tests locales
+    ├── 4. POSTMAN (23 filas) - Tests de API
+    ├── 5. CYPRESS (43 filas) - Tests E2E
+    ├── 6. DISP. VISMA (8 filas) - Dispositivos
+    └── 7. Proyectos Exist. (12 filas) - Proyectos existentes
+```
+
+### 🔧 **Sistema de Corrección por Columnas**
+- **NombreID**: ✅ Corrección ortográfica y formato (máx 255 chars)
+- **Description**: 🚫 NO MODIFICAR (preservar contenido original)
+- **Expected Result**: ✅ Corrección y extensión basada en nombre del caso
+- **Test Step**: 🚫 NO MODIFICAR (ubicación/condición previa)
+- **Test Data**: 🚫 NO MODIFICAR (datos de entrada)
+- **Epic Link**: 🚫 NO MODIFICAR (enlaces JIRA)
+- **Estado QA**: 🚫 NO MODIFICAR (estados de workflow)
+
+### 🎯 **Próximos Pasos**
+- [ ] Integración con API real de RedactionAssistant
+- [ ] Expansión a más hojas del archivo USERNAME.xlsx
+- [ ] Optimización de rendimiento para archivos grandes
+- [ ] Dashboard web para monitoreo en tiempo real
+- [ ] Exportación a múltiples formatos (CSV, JSON, XML)
 
 ## Licencia
 
@@ -645,5 +802,15 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 
 [![GitHub stars](https://img.shields.io/github/stars/R0SEWT/tests_automation.svg?style=social&label=Star)](https://github.com/R0SEWT/tests_automation)
 
-*Última actualización: Septiembre 2025*
+---
+
+## 🔗 Enlaces Rápidos
+
+- **[Comandos Rápidos](#-comandos-rápidos)** - Lista completa de comandos para extracción, corrección y testing
+- **[Estado del Proyecto](#-estado-actual-del-proyecto)** - Métricas actuales y funcionalidades completadas
+- **[Archivo Sample](#-métricas-del-archivo-sample)** - Información detallada del USERNAME_sample_7sheets.xlsx
+- **[Sistema de Corrección](#-sistema-de-corrección-por-columnas)** - Reglas específicas por tipo de columna
+- **[Diff del Proyecto](#-diff-del-proyecto-estado-actual)** - Cambios recientes y estado del repositorio
+
+*Última actualización: 30 de Septiembre de 2025*
 

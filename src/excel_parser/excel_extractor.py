@@ -240,8 +240,17 @@ class ExcelTestExtractor(BaseExtractor):
         Returns:
             Dictionary mapping column types to column names
         """
-        # Convert to lowercase for matching
-        lower_columns = [col.lower() for col in columns]
+        # Convert to lowercase for matching, handling various data types
+        lower_columns = []
+        for col in columns:
+            if isinstance(col, (tuple, list)):
+                # Si es una tupla o lista, tomar el primer elemento
+                col_str = str(col[0]) if col and col[0] is not None else ""
+            elif col is not None:
+                col_str = str(col)
+            else:
+                col_str = ""
+            lower_columns.append(col_str.lower())
 
         # Patterns to match for each column type
         id_patterns = ['testcaseid', 'test_case_id', 'tc_id', 'id', 'test id', 'case id', 'nombre', 'name', 'caso', 'test case']
