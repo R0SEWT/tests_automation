@@ -21,7 +21,7 @@ Este módulo proporciona funcionalidad completa para generar copias corregidas d
 - **Formato visual claro**: Utiliza colores y formato para identificar mejoras
 - **Preservación de estructura**: Mantiene el formato original del Excel
 
-### 📈 Reportes Comprehensivos
+### 📈 Reportes Completos
 - **Resúmenes detallados**: Estadísticas completas de correcciones aplicadas
 - **Métricas de calidad**: Tasas de corrección y análisis de eficiencia
 - **Ejemplos de correcciones**: Muestras de mejoras aplicadas
