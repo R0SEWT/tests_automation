@@ -497,6 +497,7 @@ tests/
 - ✅ Ingresa las HUS y expect results desde el excel
 - ✅ Análisis automático de configuración HU desde Excel
 - ✅ Extracción automática de contenido HU desde Jira
+- ✅ Extracción de casos de prueba desde worksheets Excel
 - 🔄 Integración completa con RedactionAssistant para corrección automática
 - 🔄 Interfaz web para gestión de correcciones
 - 🔄 API REST para procesamiento automatizado

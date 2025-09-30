@@ -119,6 +119,12 @@ class ExcelTestExtractor:
         Identify which columns contain test case ID, description, and expected results.
 
         Uses flexible matching to handle variations in column naming.
+        Supports both English and Spanish column names.
+
+        Supported patterns:
+        - ID: testcaseid, test_case_id, tc_id, id, test id, case id, nombre, name, caso, test case
+        - Description: description, desc, descripción, test description, case description, steps, test steps, pasos, test step
+        - Expected Result: expectedresult, expected_result, expected, result, resultado esperado, expected result, outcome
 
         Args:
             columns: List of column names
@@ -130,9 +136,9 @@ class ExcelTestExtractor:
         lower_columns = [col.lower() for col in columns]
 
         # Patterns to match for each column type
-        id_patterns = ['testcaseid', 'test_case_id', 'tc_id', 'id', 'test id', 'case id']
-        desc_patterns = ['description', 'desc', 'test description', 'case description', 'steps', 'test steps']
-        expected_patterns = ['expectedresult', 'expected_result', 'expected', 'result', 'outcome']
+        id_patterns = ['testcaseid', 'test_case_id', 'tc_id', 'id', 'test id', 'case id', 'nombre', 'name', 'caso', 'test case']
+        desc_patterns = ['description', 'desc', 'descripción', 'test description', 'case description', 'steps', 'test steps', 'pasos', 'test step']
+        expected_patterns = ['expectedresult', 'expected_result', 'expected', 'result', 'resultado esperado', 'expected result', 'outcome']
 
         def find_column(patterns):
             for pattern in patterns:
