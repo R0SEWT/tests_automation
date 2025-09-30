@@ -169,7 +169,7 @@ class SimplifiedExcelCorrectionPipeline:
         for worksheet_name, test_cases in all_test_cases.items():
             analysis['worksheet_details'][worksheet_name] = {
                 'test_case_count': len(test_cases),
-                'has_descriptions': sum(1 for tc in test_cases if tc.get('description', '').strip()),
+                'has_descriptions': sum(bool(tc.get('description', '').strip())
                 'has_expected_results': sum(1 for tc in test_cases if tc.get('expected_result', '').strip()),
                 'additional_columns': len(test_cases[0].get('additional_data', {})) if test_cases else 0
             }
