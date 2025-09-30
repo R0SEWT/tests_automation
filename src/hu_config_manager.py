@@ -8,11 +8,14 @@ with Jira-extracted content.
 import pandas as pd
 import re
 from collections import Counter
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
 import logging
 
-logger = logging.getLogger(__name__)
+from .core.base import ProcessingError
+from .core.utils import TextProcessor, Validator, Logger
+
+logger = Logger.setup_logger(__name__)
 
 
 class HUConfigurationManager:
@@ -31,12 +34,31 @@ class HUConfigurationManager:
             excel_path: Path to the Excel file containing HU configuration
         """
         self.excel_path = Path(excel_path)
+        self.logger = logger
+        
+        # Validate file exists
         if not self.excel_path.exists():
-            raise FileNotFoundError(f"Excel file not found: {excel_path}")
+            raise ProcessingError(f"Excel file not found: {excel_path}")
 
         self._analysis = None
         self._hu_links = {}
         self._worksheet_mapping = {}
+
+    def process(self, input_data: Any = None) -> Dict[str, Any]:
+        """
+        Process the HU configuration and return analysis results.
+        
+        Args:
+            input_data: Not used for HU configuration processing
+            
+        Returns:
+            Dictionary containing HU configuration analysis results
+        """
+        try:
+            return self.prepare_matching_data()
+        except Exception as e:
+            self.logger.error(f"Failed to process HU configuration: {e}")
+            raise ProcessingError(f"HU configuration processing failed: {e}")
 
     @property
     def analysis(self) -> Dict:

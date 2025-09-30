@@ -7,61 +7,124 @@ from Excel files organized by worksheets.
 
 import pandas as pd
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+from ..core.base import BaseExtractor, ExtractionError
+from ..core.utils import TextProcessor, Logger, FileManager
+
+logger = Logger.setup_logger(__name__)
 
 
-class ExcelTestExtractor:
+class ExcelTestExtractor(BaseExtractor):
     """
-    Extracts test cases and expected results from Excel files.
-
-    Supports multiple worksheets where each worksheet represents a test suite
-    or category of test cases.
+    Extractor for test cases from Excel files.
+    
+    This class reads Excel files and extracts test cases from specified worksheets.
+    It can handle multiple worksheets and attempts to identify test case columns
+    automatically based on common naming patterns.
     """
+    
+    COLUMN_PATTERNS = {
+        'id': [
+            'testcaseid', 'test_case_id', 'test case id', 'id', 'case_id', 
+            'caseid', 'tc_id', 'tcid', 'test id', 'test_id', 'caso', 'caso_id'
+        ],
+        'description': [
+            'description', 'desc', 'test description', 'test_description',
+            'case description', 'case_description', 'scenario', 'test case',
+            'test_case', 'descripción', 'descripcion', 'prueba', 'detalle'
+        ],
+        'expected': [
+            'expected', 'expectedresult', 'expected_result', 'expected result',
+            'result', 'esperado', 'resultado_esperado', 'resultado esperado',
+            'outcome', 'expected_outcome', 'expected outcome'
+        ]
+    }
 
     def __init__(self, file_path: str):
         """
-        Initialize the extractor with an Excel file path.
+        Initialize the ExcelTestExtractor.
 
         Args:
-            file_path: Path to the Excel file to process
+            file_path: Path to the Excel file to extract from
         """
-        self.file_path = Path(file_path)
-        if not self.file_path.exists():
-            raise FileNotFoundError(f"Excel file not found: {file_path}")
-
+        super().__init__(file_path)
         self.workbook = None
-        self._load_workbook()
+        self._file_path = Path(file_path)
 
-    def _load_workbook(self):
-        """Load the Excel workbook using pandas ExcelFile for efficient access."""
+    @property
+    def file_path(self) -> Path:
+        """Get the file path."""
+        return self._file_path
+
+    def extract(self) -> Dict[str, Any]:
+        """
+        Extract all test cases from the Excel file.
+        
+        Implementation of the abstract method from BaseExtractor.
+        
+        Returns:
+            Dictionary containing extracted test cases and metadata
+        """
+        if not self.load_workbook():
+            return {'success': False, 'error': 'Failed to load workbook', 'test_cases': []}
+        
         try:
-            self.workbook = pd.ExcelFile(self.file_path)
-            logger.info(f"Loaded Excel file: {self.file_path}")
-            logger.info(f"Available worksheets: {self.workbook.sheet_names}")
+            all_test_cases = self.extract_all_test_cases()
+            # Flatten the test cases from all worksheets
+            flattened_test_cases = []
+            for worksheet_test_cases in all_test_cases.values():
+                flattened_test_cases.extend(worksheet_test_cases)
+            
+            return {
+                'success': True,
+                'file_path': str(self.file_path),
+                'total_test_cases': len(flattened_test_cases),
+                'test_cases': flattened_test_cases,
+                'worksheets_processed': len(all_test_cases)
+            }
         except Exception as e:
-            logger.error(f"Failed to load Excel file: {e}")
-            raise
+            self.logger.error(f"Failed to extract test cases: {e}")
+            return {'success': False, 'error': str(e), 'test_cases': []}
+
+    def load_workbook(self) -> bool:
+        """
+        Load the Excel workbook from file.
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            self.workbook = str(self.file_path)
+            self.logger.info(f"Loaded workbook: {self.file_path}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to load workbook: {e}")
+            return False
 
     def get_worksheet_names(self) -> List[str]:
         """
-        Get the names of all worksheets in the Excel file.
+        Get list of available worksheet names in the workbook.
 
         Returns:
             List of worksheet names
         """
         if self.workbook is None:
-            raise RuntimeError("Workbook not loaded")
-        return self.workbook.sheet_names
+            self.logger.warning("Workbook not loaded")
+            return []
+        
+        try:
+            # Use pandas to get sheet names
+            excel_file = pd.ExcelFile(self.workbook)
+            return [str(name) for name in excel_file.sheet_names]
+        except Exception as e:
+            self.logger.error(f"Failed to get sheet names: {e}")
+            return []
 
     def extract_test_cases_from_worksheet(self, worksheet_name: str) -> List[Dict]:
         """
         Extract test cases from a specific worksheet.
-
-        Assumes the worksheet has columns: TestCaseID, Description, ExpectedResult
-        The first row is treated as headers.
 
         Args:
             worksheet_name: Name of the worksheet to extract from
@@ -74,45 +137,88 @@ class ExcelTestExtractor:
 
         try:
             # Read the worksheet
-            df = pd.read_excel(self.workbook, sheet_name=worksheet_name)
-
-            # Clean column names (remove extra spaces, standardize case)
-            df.columns = df.columns.str.strip().str.title()
-
-            # Look for test case columns (flexible naming)
-            test_case_columns = self._identify_columns(df.columns.tolist())
-
-            if not test_case_columns['id'] or not test_case_columns['description']:
-                logger.warning(f"Required columns not found in worksheet '{worksheet_name}'. "
-                             f"Available columns: {df.columns.tolist()}")
+            df = self._read_worksheet(worksheet_name)
+            if df is None:
                 return []
 
+            # Identify columns
+            test_case_columns = self._identify_columns(df.columns.tolist())
+            
+            if not self._validate_required_columns(test_case_columns, worksheet_name):
+                return []
+
+            # Extract test cases
             test_cases = []
-
-            for idx, row in df.iterrows():
-                test_case = {
-                    'worksheet': worksheet_name,
-                    'row_number': idx + 2,  # +2 because pandas is 0-indexed and Excel starts at 1, plus header
-                    'test_case_id': str(row[test_case_columns['id']]).strip() if pd.notna(row[test_case_columns['id']]) else f"TC_{idx+1}",
-                    'description': str(row[test_case_columns['description']]).strip() if pd.notna(row[test_case_columns['description']]) else "",
-                    'expected_result': str(row[test_case_columns['expected']]).strip() if test_case_columns['expected'] and pd.notna(row[test_case_columns['expected']]) else "",
-                    'additional_data': {}
-                }
-
-                # Add any additional columns as extra data
-                for col in df.columns:
-                    if col not in [test_case_columns['id'], test_case_columns['description'], test_case_columns['expected']]:
-                        if pd.notna(row[col]):
-                            test_case['additional_data'][col] = str(row[col]).strip()
-
+            for row_idx, (idx, row) in enumerate(df.iterrows()):
+                test_case = self._create_test_case_dict(
+                    worksheet_name, row_idx, row, test_case_columns, df.columns.tolist()
+                )
                 test_cases.append(test_case)
 
-            logger.info(f"Extracted {len(test_cases)} test cases from worksheet '{worksheet_name}'")
+            self.logger.info(f"Extracted {len(test_cases)} test cases from worksheet '{worksheet_name}'")
             return test_cases
 
         except Exception as e:
-            logger.error(f"Failed to extract test cases from worksheet '{worksheet_name}': {e}")
+            self.logger.error(f"Failed to extract test cases from worksheet '{worksheet_name}': {e}")
             return []
+
+    def _read_worksheet(self, worksheet_name: str) -> Optional[pd.DataFrame]:
+        """Read and preprocess a worksheet."""
+        try:
+            df = pd.read_excel(self.workbook, sheet_name=worksheet_name)
+            # Clean column names (remove extra spaces, standardize case)
+            df.columns = df.columns.str.strip().str.title()
+            return df
+        except Exception as e:
+            self.logger.error(f"Failed to read worksheet '{worksheet_name}': {e}")
+            return None
+
+    def _validate_required_columns(self, test_case_columns: Dict[str, Optional[str]], worksheet_name: str) -> bool:
+        """Validate that required columns are present."""
+        if not test_case_columns['id'] or not test_case_columns['description']:
+            self.logger.warning(
+                f"Required columns not found in worksheet '{worksheet_name}'. "
+                f"Available columns: {list(test_case_columns.keys())}"
+            )
+            return False
+        return True
+
+    def _create_test_case_dict(
+        self, 
+        worksheet_name: str, 
+        idx: int, 
+        row: pd.Series, 
+        test_case_columns: Dict[str, Optional[str]], 
+        all_columns: List[str]
+    ) -> Dict:
+        """Create a test case dictionary from a row."""
+        # Extract basic fields
+        test_case_id = self._extract_cell_value(row, test_case_columns['id'], f"TC_{idx+1}")
+        description = self._extract_cell_value(row, test_case_columns['description'], "")
+        expected_result = self._extract_cell_value(row, test_case_columns['expected'], "")
+
+        test_case = {
+            'worksheet': worksheet_name,
+            'row_number': idx + 2,  # +2 for pandas 0-index + header
+            'test_case_id': test_case_id,
+            'description': description,
+            'expected_result': expected_result,
+            'additional_data': {}
+        }
+
+        # Add additional columns
+        excluded_columns = {test_case_columns['id'], test_case_columns['description'], test_case_columns['expected']}
+        for col in all_columns:
+            if col not in excluded_columns and pd.notna(row[col]):
+                test_case['additional_data'][col] = str(row[col]).strip()
+
+        return test_case
+
+    def _extract_cell_value(self, row: pd.Series, column_name: Optional[str], default: str = "") -> str:
+        """Extract and clean cell value."""
+        if not column_name or column_name not in row.index or pd.isna(row[column_name]):
+            return default
+        return str(row[column_name]).strip()
 
     def _identify_columns(self, columns: List[str]) -> Dict[str, Optional[str]]:
         """

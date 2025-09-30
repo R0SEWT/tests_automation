@@ -10,12 +10,14 @@ import asyncio
 import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional
+import json
 
 from src.hu_config_manager import HUConfigurationManager
 from src.excel_parser.excel_extractor import ExcelTestExtractor
+from src.core.base import PipelineError
+from src.core.utils import FileManager, BatchProcessor, Logger
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = Logger.setup_logger(__name__)
 
 
 class HUProcessingPipeline:
@@ -37,9 +39,36 @@ class HUProcessingPipeline:
             excel_path: Path to the Excel file containing HU configuration
         """
         self.excel_path = excel_path
+        self.logger = logger
         self.hu_manager = HUConfigurationManager(excel_path)
         self.extracted_hu_content: Optional[List[Dict[str, Any]]] = None
         self.extracted_test_cases: Optional[Dict[str, List[Dict]]] = None
+
+    def run(self, input_data: Any = None, batch_size: int = 5) -> Dict[str, Any]:
+        """
+        Run the complete HU processing pipeline.
+
+        Args:
+            input_data: Not used for this pipeline
+            batch_size: Number of HUs to process in each batch
+
+        Returns:
+            Complete pipeline results
+        """
+        try:
+            # Run the async pipeline in a sync wrapper
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If we're already in an event loop, create a new task
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(asyncio.run, self.run_full_pipeline(batch_size))
+                    return future.result()
+            else:
+                return asyncio.run(self.run_full_pipeline(batch_size))
+        except Exception as e:
+            self.logger.error(f"Pipeline execution failed: {e}")
+            raise PipelineError(f"HU processing pipeline failed: {e}")
 
     def analyze_configuration(self) -> Dict[str, Any]:
         """

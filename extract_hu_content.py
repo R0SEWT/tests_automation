@@ -15,12 +15,13 @@ from typing import List, Dict, Any
 
 from src.hu_config_manager import HUConfigurationManager
 from src.jira_import.jira_scraper import JiraScraper
+from src.core.base import BaseExtractor, ExtractionError
+from src.core.utils import FileManager, BatchProcessor, Logger
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = Logger.setup_logger(__name__)
 
 
-class HUContentExtractor:
+class HUContentExtractor(BaseExtractor):
     """
     Extracts HU content from Jira using Excel configuration.
 
@@ -35,9 +36,39 @@ class HUContentExtractor:
         Args:
             excel_path: Path to the Excel file containing HU configuration
         """
+        super().__init__(excel_path)
         self.excel_path = excel_path
         self.hu_manager = HUConfigurationManager(excel_path)
         self.scraper = None
+
+    def extract(self) -> Dict[str, Any]:
+        """
+        Extract all HU content (sync wrapper for async operation).
+        
+        Implementation of the abstract method from BaseExtractor.
+        
+        Returns:
+            Dictionary containing extracted HU content and metadata
+        """
+        try:
+            # Run the async extraction
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If we're already in an event loop, create a new task
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(asyncio.run, self._async_extract())
+                    return future.result()
+            else:
+                return asyncio.run(self._async_extract())
+        except Exception as e:
+            self.logger.error(f"Failed to extract HU content: {e}")
+            raise ExtractionError(f"HU content extraction failed: {e}")
+
+    async def _async_extract(self) -> Dict[str, Any]:
+        """Async implementation of HU content extraction."""
+        async with self as extractor:
+            return await extractor.extract_and_save_all()
 
     async def __aenter__(self):
         """Async context manager entry."""
