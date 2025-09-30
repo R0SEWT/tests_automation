@@ -373,10 +373,18 @@ class ExcelCorrector:
         """
         # Process all corrections
         correction_results = self.process_corrections()
-        
+
         if not correction_results['success']:
-            raise RuntimeError("Failed to process corrections")
-        
+            error_details = []
+            if 'errors' in correction_results and correction_results['errors']:
+                error_details.append(f"Errors: {correction_results['errors']}")
+            if 'worksheet_names' in correction_results and correction_results['worksheet_names']:
+                error_details.append(f"Worksheets: {correction_results['worksheet_names']}")
+            error_message = "Failed to process corrections"
+            if error_details:
+                error_message += " - " + "; ".join(error_details)
+            raise RuntimeError(error_message)
+
         # Determine output path
         if output_path is None:
             output_path = self.original_file_path.parent / f"{self.original_file_path.stem}_corregido.xlsx"
