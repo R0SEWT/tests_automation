@@ -68,7 +68,10 @@ class IntegratedHUCorrectionPipeline:
         expected_result_texts = []
 
         for entry in correction_data.get('correction_ready', []):
-            hu_code = entry['hu_code']
+            hu_code = entry.get('hu_code', 'UNKNOWN')
+            if hu_code == 'UNKNOWN':
+                logger.error(f"Entry missing hu_code: {entry}")
+                continue
             hu_content = entry['hu_content']
             worksheet_test_cases = entry['test_cases']
 
