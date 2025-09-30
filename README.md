@@ -43,6 +43,7 @@ tests_automation/
 │   ├── excel_parser/          # Parser de archivos Excel
 │   │   ├── __init__.py        # Inicialización del módulo
 │   │   └── excel_extractor.py # Extractor de casos de prueba Excel
+│   ├── hu_config_manager.py   # Gestor de configuración HU
 │   ├── jira_import/           # Scraper de Jira
 │   │   └── jira_scraper.py    # Automatización de extracción de issues
 │   └── main.py                # Script principal alternativo
@@ -65,8 +66,8 @@ tests_automation/
 Core del sistema, basado en LLMs para corrección y normalización de texto.
 Incluye módulos de procesamiento concurrente, construcción de prompts y validación de integridad.
 
-### Excel Parser (procesador Excel)
-Extractor que lee archivos Excel organizados por worksheets y extrae casos de prueba y resultados esperados en formato estructurado (JSON).
+### HU Config Manager (gestor de configuración HU)
+Analiza archivos Excel para extraer configuración de HUs, identificar prefijos, mapear worksheets con códigos HU y preparar datos para matching con contenido de Jira.
 
 ### Jira Import (scraper)
 Automatización para extraer datos de issues desde Jira usando Playwright y perfiles de Chrome existentes.
@@ -246,6 +247,21 @@ python demo_excel_extractor.py
 ```
 
 Los casos de prueba extraídos se guardan en `data/processed/` como archivos JSON organizados por worksheet.
+
+### Análisis de configuración HU
+
+```bash
+# Analizar archivo USERNAME.xlsx y actualizar HU_CODE automáticamente
+python analyze_hu_config.py
+
+# Usar el HU Configuration Manager programáticamente
+python -c "
+from src.hu_config_manager import HUConfigurationManager
+manager = HUConfigurationManager('data/USERNAME.xlsx')
+print(f'Prefijo HU: {manager.get_hu_prefix()}')
+print(f'Códigos HU disponibles: {len(manager.get_available_hu_codes())}')
+"
+```
 
 ### Extracción de datos desde Jira
 
