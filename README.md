@@ -69,6 +69,9 @@ Incluye módulos de procesamiento concurrente, construcción de prompts y valida
 ### HU Config Manager (gestor de configuración HU)
 Analiza archivos Excel para extraer configuración de HUs, identificar prefijos, mapear worksheets con códigos HU y preparar datos para matching con contenido de Jira.
 
+### HU Content Extractor (extractor de contenido HU)
+Extrae contenido de HUs desde Jira usando la configuración del Excel, procesa en lotes y guarda datos estructurados para corrección automática.
+
 ### Jira Import (scraper)
 Automatización para extraer datos de issues desde Jira usando Playwright y perfiles de Chrome existentes.
 
@@ -263,6 +266,38 @@ print(f'Códigos HU disponibles: {len(manager.get_available_hu_codes())}')
 "
 ```
 
+### Extracción de contenido HU desde Jira
+
+```bash
+# Extraer contenido real de todas las HUs configuradas
+python extract_hu_content.py
+
+# Simular extracción para testing (sin navegador)
+python simulate_hu_extraction.py
+```
+
+Los contenidos extraídos se guardan en `data/raw/hus/` como archivos JSON nombrados por código HU (USRNM01.json, USRNM02.json, etc.).
+
+### Flujo completo de procesamiento HU
+
+```mermaid
+graph TD
+    A[USERNAME.xlsx] --> B[HU Config Manager]
+    B --> C[Identificar prefijo USRNM]
+    C --> D[Extraer issue keys VLPER-XXXXX]
+    D --> E[HU Content Extractor]
+    E --> F[Extraer contenido desde Jira]
+    F --> G[Guardar JSON por HU]
+    G --> H[RedactionAssistant]
+    H --> I[Corrección automática]
+    I --> J[Resultados corregidos]
+```
+
+1. **Configuración**: `analyze_hu_config.py` analiza USERNAME.xlsx
+2. **Extracción**: `extract_hu_content.py` obtiene contenido de Jira
+3. **Corrección**: RedactionAssistant procesa y corrige automáticamente
+4. **Matching**: Contenido HU se relaciona con worksheets Excel por código
+
 ### Extracción de datos desde Jira
 
 ```bash
@@ -278,21 +313,151 @@ Ejecutar el script `manual_testing2.ahk`.
 
 ---
 
-## Flujo de procesamiento
+## Flujo Actual del Programa
+
+El sistema **Tests Automation** sigue un flujo de procesamiento completo desde la configuración inicial hasta la corrección automática de casos de prueba. A continuación se detalla el flujo completo:
+
+### 🎯 **Fase 1: Configuración y Análisis HU**
 
 ```mermaid
 graph TD
-    A[Entradas] --> B[Validación]
-    B --> C[Procesamiento por lotes]
-    C --> D[Corrección con IA]
-    D --> E[Validación de salida]
-    E --> F[Feedback detallado]
-    F --> G[Archivos corregidos]
-    H[XML] --> I[Parser]
-    I --> J[Estructuración de datos]
-    K[Jira Issues] --> L[Scraper]
-    L --> M[JSON Export]
+    A[Archivo USERNAME.xlsx] --> B[HU Config Manager]
+    B --> C[Análisis de estructura]
+    C --> D[Identificación de prefijo USRNM]
+    D --> E[Extracción de links Jira]
+    E --> F[Actualización HU_CODE en .env]
+    F --> G[Mapeo HU → Worksheets]
 ```
+
+**Procesos involucrados:**
+1. **Análisis del Excel USERNAME.xlsx** con `analyze_hu_config.py`
+2. **Identificación automática del prefijo** más común (actualmente "USRNM")
+3. **Extracción de 47 links de Jira** desde la hoja "HUs"
+4. **Actualización automática de HU_CODE** en el archivo `.env`
+5. **Creación de mappings** HU → Worksheets para matching futuro
+
+### 📊 **Fase 2: Extracción de Datos desde Múltiples Fuentes**
+
+```mermaid
+graph TD
+    A[Excel USERNAME.xlsx] --> B[Excel Parser]
+    B --> C[Extracción por worksheets]
+    C --> D[Test Cases + Expected Results]
+
+    E[Jira Issues] --> F[Jira Scraper Playwright]
+    F --> G[Autenticación OAuth]
+    G --> H[Extracción XML HU]
+
+    I[Archivos legacy] --> J[Doc Parser XML]
+    J --> K[Conversión a JSON]
+```
+
+**Módulos especializados:**
+- **Excel Parser**: Extrae casos de prueba organizados por worksheets
+- **Jira Scraper**: Automatiza extracción usando Playwright con perfiles persistentes
+- **Doc Parser**: Procesa archivos XML legacy de historias de usuario
+
+### 🤖 **Fase 3: Corrección Automática con IA**
+
+```mermaid
+graph TD
+    A[Datos extraídos] --> B[RedactionAssistant]
+    B --> C[Configuración centralizada]
+    C --> D[Builder de prompts]
+    D --> E[Procesamiento por lotes]
+    E --> F[Llamadas a DeepSeek/OpenAI]
+    F --> G[Corrección ortográfica/gramatical]
+    G --> H[Validación de integridad]
+    H --> I[Feedback detallado]
+    I --> J[Archivos corregidos]
+```
+
+**Componentes del motor IA:**
+- **Config**: Gestión centralizada de API keys y parámetros
+- **Builder**: Construcción inteligente de prompts según el contexto
+- **Processor**: Procesamiento concurrente y manejo de lotes
+- **Validación**: Aseguramiento de calidad en correcciones
+
+### 🔄 **Fase 4: Matching HU y Corrección Integrada** *(Próximamente)*
+
+```mermaid
+graph TD
+    A[HU Configuration] --> B[Extracción Jira por lotes]
+    B --> C[Matching HU + Contenido]
+    C --> D[Corrección automática]
+    D --> E[Actualización worksheets Excel]
+    E --> F[Reportes de cambios]
+```
+
+**Flujo futuro planificado:**
+1. **Extracción masiva** de las 47 HUs desde Jira usando issue keys
+2. **Matching automático** entre contenido Jira y worksheets Excel
+3. **Aplicación de corrección IA** a casos de prueba por HU
+4. **Actualización in-place** de worksheets con contenido corregido
+
+### 📁 **Estructura de Datos y Flujo de Archivos**
+
+```
+data/
+├── raw/
+│   ├── USERNAME.xlsx          # Configuración HU + Test Cases
+│   ├── hus/                   # JSON extraídos de Jira
+│   │   ├── VLPER-91037.json
+│   │   ├── VLPER-91038.json
+│   │   └── ...
+│   └── [archivos legacy]      # UserStory.txt, TestCases.txt
+├── processed/
+│   ├── *_test_cases.json      # Casos extraídos del Excel
+│   ├── corrected_*.json       # Resultados de corrección IA
+│   └── feedback_*.json        # Reportes de cambios
+└── config/
+    ├── jira_config.env        # URLs y issue keys para Jira
+    └── .env                   # API keys y HU_CODE=USRNM
+```
+
+### ⚙️ **Configuración Centralizada**
+
+**Archivo `.env`:**
+```ini
+# IA Configuration
+DS_API_KEY=sk-...
+OPENAI_API_KEY=sk-proj-...
+PROVIDER=deepseek
+BATCH_SIZE=20
+
+# HU Configuration (auto-updated)
+HU_CODE=USRNM
+```
+
+**Archivo `config/jira_config.env`:**
+```ini
+JIRA_BASE_URL=https://jira.visma.com
+ISSUE_KEYS=VLPER-91037,VLPER-91038,...
+```
+
+### 🚀 **Ejecución Completa del Sistema**
+
+```bash
+# 1. Análisis y configuración HU
+python analyze_hu_config.py
+
+# 2. Extracción desde Excel
+python -c "from src.excel_parser import ExcelTestExtractor; ext = ExcelTestExtractor('data/USERNAME.xlsx'); ext.extract_and_save()"
+
+# 3. Extracción desde Jira (con Chrome running)
+python src/main.py
+
+# 4. Corrección automática
+python src/redactionAssistant/main.py
+```
+
+### 📈 **Métricas y Monitoreo**
+
+- **47 HUs configuradas** con prefijo "USRNM"
+- **55 worksheets** en Excel (47 HU + 8 auxiliares)
+- **Cobertura de testing**: ~97% en módulos críticos
+- **Procesamiento concurrente** con batch size configurable
+- **Validación automática** de integridad en cada paso
 
 ---
 
@@ -330,7 +495,9 @@ tests/
 ## Roadmap
 
 - ✅ Ingresa las HUS y expect results desde el excel
-- 🔄 Integración completa con RedactionAssistant
+- ✅ Análisis automático de configuración HU desde Excel
+- ✅ Extracción automática de contenido HU desde Jira
+- 🔄 Integración completa con RedactionAssistant para corrección automática
 - 🔄 Interfaz web para gestión de correcciones
 - 🔄 API REST para procesamiento automatizado
 - 🔄 Dashboard de métricas y analytics Extraer lo
