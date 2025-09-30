@@ -87,6 +87,10 @@ class BasicXMLParserStrategy(XMLParserStrategy):
         xml_dict = get_xml_dict(xml_soup)
         return xml_dict
 
+    def parse_content(self, xml_content: str) -> Dict[str, Any]:
+        xml_soup = get_xml_soup(xml_content)
+        return get_xml_dict(xml_soup)
+
 class HURepository:
     def __init__(self, parser_strategy: XMLParserStrategy):
         self.parser_strategy = parser_strategy
@@ -96,6 +100,14 @@ class HURepository:
         hu_list = []
         for file in xml_files:
             raw_hu_dict = self.parser_strategy.parse(file)
+            clean = get_clean_hu_dict(raw_hu_dict["rss"]["channel"]["item"])
+            hu_list.append(clean)
+        return hu_list
+
+    def get_all_hu_from_xmls(self, xml_contents: List[str]) -> List[Dict[str, str]]:
+        hu_list = []
+        for xml_content in xml_contents:
+            raw_hu_dict = self.parser_strategy.parse_content(xml_content)
             clean = get_clean_hu_dict(raw_hu_dict["rss"]["channel"]["item"])
             hu_list.append(clean)
         return hu_list
